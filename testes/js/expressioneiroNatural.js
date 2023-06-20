@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 //gera expressões dentro dos números NATURAIS
-//derivado de GeradorExpressaoNotavel em 01/02/2023
-class GeradorExpressaoNotavelNatural {
+//derivado de GeradorExpressao em 01/02/2023
+class GeradorExpressaoNatural {
 	/**
 	 * 
 	 * @param {{withParenteses:boolean, maxPotency:number, minNumber:number, maxNumber:number, maxLiteral:number, qtdeMonomio:number}} optionsTable 
@@ -255,7 +255,7 @@ function gerarExpressaoNotavelNatural ( form, targetId ) {
     maxNumber = a;
   }
 
-	let gerador = new GeradorExpressaoNotavelNatural({withParenteses, maxPotency, minNumber, maxNumber, maxLiteral, qtdeMonomio});
+	let gerador = new GeradorExpressaoNatural({withParenteses, maxPotency, minNumber, maxNumber, maxLiteral, qtdeMonomio});
 	let strHtml = "";
 	for (let i = 0; i < qtdeExpressao; i++) {
 		if (!gerador.doExpression()) {
