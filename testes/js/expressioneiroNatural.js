@@ -34,14 +34,14 @@ class GeradorExpressaoNatural {
     //NOTA: entre cada formato é escolhido um sinal s
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
-		const formatosBase = [
+		const formatosBase = this.optionsTable.formatosBase || [
       '(a + b)',
       '(A + D + B)',
       '(a + b)*(a + b)',
       '(A + B)'
 		];
 
-    const formatoSemParenteses = [
+    const formatoSemParenteses = this.optionsTable.formatosSemParenteses || [
       'a + b',
 		];
 
@@ -186,7 +186,7 @@ class GeradorExpressaoNatural {
           continue;
         }
 
-        this.expressionStr = '<span>_</span>'+expUser+'<span>_</span>';
+        this.expressionStr = '<span style="white-space: pre;"> '+expUser+' </span>';
         this.expressionStrJS = expJS;
         this.answer = resp;
 				//this.answer = this.generateAnswer({chosenFormas, answerMonomioBase})
@@ -268,8 +268,11 @@ function gerarExpressaoNotavelNatural ( form, targetId ) {
 		+gerador.expressionStr
 		+'</strong>'
 		+'<br />'
-		+'<button type="button" onclick="showExpressaoNotavelNaturalResp('+i+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
-		+'Ver resposta Expressão-'+(i+1)
+		+'<button '
+    +' type="button"' 
+    +' class="smallButton"'
+    +' onclick="showExpressaoNotavelNaturalResp('+i+',`'+gerador.expressionJS+'`,'+gerador.answer+'); ">'
+		+'Ver resposta'+(i+1)
 		+'</button><br /></p>';
 	}
 	

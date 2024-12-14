@@ -8,6 +8,11 @@ body {
   background-color: #36393f;
 }
 
+.divQuestions {
+  border: 5px dashed black; 
+  padding-left: 4px;
+}
+
 .divExpressaoN {
   background-color: #36393f;
 }
@@ -45,10 +50,11 @@ th tr {
   background-color: #bdb76b
 }
 
+/*
 .smallButton {
   background-color: #bee3db;
   border: 1px solid black;
-  border-radius: 30%;
+  border-radius: 10%;
   color: black;
   padding: 8px 10px;
   text-align: center;
@@ -57,6 +63,20 @@ th tr {
   display: inline-block;
   margin: 4px 2px;
   cursor: pointer;
+}
+*/
+.smallButton {
+  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 20px;
 }
 
 .mediumButton {

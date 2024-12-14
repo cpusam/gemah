@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link type="text/css" rel="stylesheet" href="../css/styles.css">
+	<script src="utils.js"></script>
+	<script src="./js/geradorDivisaoN.js"></script>
+</head>
+<body>
+  <form id="geradorDivisaoN" action="javascript:;" onsubmit="geradorDivisaoN(this, 'divisaoN')">
+		<h1>Gerador de Divisão N:</h1>
+			<strong>Quais números da tabuada de DIVIDIR usar?</strong>
+			<br />
+				<label for="divisaoMinDividendo">Qual o dividendo minimo?</label>
+				<input id="divisaoMinDividendo" type="number" value="1000" step=1 min="1">
+				<label for="divisaoMaxDividendo">Qual o dividendo MÁXIMO?</label>
+				<input id="divisaoMaxDividendo" type="number" value="10000000" step=1 min="1">
+			<br/>
+				<label for="divisaoMinDivisor">Qual o divisor minimo?</label>
+				<input id="divisaoMinDivisor" type="number" value="1000" step=1 min="1">
+				<label for="divisaoMaxDivisor">Qual o divisor MÁXIMO?</label>
+				<input id="divisaoMaxDivisor" type="number" value="5000" step=1 min="1">
+			<br />
+			<label for="divisao">
+				Quantas <strong>DIVISÃO</strong> deve ter?
+				<input  id="divisaoQtde" type="number" name="divisao" min="1" step="1" value="10">
+			</label>
+			<br />
+			<button class="largeButton" type="submit">Gerar Divisão</button>
+	</form>
+	<div id="divisaoN" style="border: 5px dashed black; padding-left: 4px; " class="divExpressaoN">
+	</div>
+</body>
+</html>
