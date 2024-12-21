@@ -63,7 +63,7 @@ function gerarContas ( form, divContas) {
 	console.log("Aqui estamos gerarContas");
 	let strHtml = "";
 	let lengthA = 5;
-	let optionsTermB = [];
+	let optionsTermB = [2];
 	let qtdeContas = 0;
 	let operacao = null;
 
@@ -91,13 +91,41 @@ function gerarContas ( form, divContas) {
 		return;
 	}
 
+  let lengthB = 6;
 	for (let i = 0; i < qtdeContas; i++)
 	{
 		let termB = "" + optionsTermB[RandInt(0, optionsTermB.length - 1)];
-		let termA = makeMultTerm(0, 9, RandInt(2, lengthA));
+    //pro gabriel eu mudo os valores por operação
+    if (operacao === "mult") {
+      let minB = 3;
+      do {
+        termB = makeMultTerm(0, 9, RandInt(minB, 5));
+      } while (termB.length < minB);
+      lengthA = 10;
+    }
+    else if (operacao == "div") {
+      let minB = 3;
+      do {
+        termB = makeMultTerm(0, 9, RandInt(minB, 5));
+      } while (termB.length < minB);
+      lengthA = 8;
+    }
+    else if (operacao == "sub") {
+      let minB = 4;
+      do {
+        termB = makeMultTerm(0, 9, RandInt(minB, 6));
+      } while (termB.length < minB);
+      lengthA = 9;
+    }
+    let k = 0;
+    //remove os zeros a esquerda
+		while (termB.length > 1 && termB[k] == 0 && k++) ;
+    termB = termB.slice(k, termB.length);
+
+		let termA = makeMultTerm(0, 9, RandInt(7, lengthA));
 		
 		let A = termA;
-		let k = 0;
+		k = 0;
     //remove os zeros a esquerda
 		while (A.length > 1 && A[k] == 0 && k++) ;
 		  A = A.slice(k, A.length);
