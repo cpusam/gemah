@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gerador De Contas</title>
+  <link type="text/css" rel="stylesheet" href="../css/styles.css">
+	<script src="./js/utils.js"></script>
+	<script src="./js/geradorContas.js"></script>
+</head>
+<body>
+	<form id="geradorContasN" action="javascript:;" onsubmit="gerarContas(this, 'contas');">
+    <h1>Gerador de Contas:</h1>
+		<strong>Que tipo de conta?</strong> <br />
+    <label for="addOper">Adição</label>
+		<input id="addOper" name="operacao" type="radio" value="add" checked><br />
+    <label for="subOper">Subtração</label>
+		<input id="subOper" name="operacao" type="radio" value="sub" checked><br />
+		<label for="multOper">Multicação</label>
+		<input id="multOper" name="operacao" type="radio" value="mult" checked><br />
+		<label for="divOper">Divisão</label>
+		<input id="divOper" name="operacao" type="radio" value="div"><br />
+		<strong>Quantas contas gerar?</label><br />
+		<input id="qtdeContas" type="number" min="1" step="1" value="10">
+		<br />
+		<label>Marque os números que quer ver a direita (multiplicador) das contas: exemplo, se marcar 7 então tá usando tabuada do 7</label>
+			<br />
+			<label for="termB1">Usar 1</label>
+			<input id="termB1" type="checkbox" value="1">
+      <span>|</span>
+			<label for="termB2">Usar 2</label>
+			<input id="termB2" type="checkbox" value="2">
+      <span>|</span>
+			<label for="termB3">Usar 3</label>
+			<input id="termB3" type="checkbox" value="3">
+      <span>|</span>
+			<label for="termB4">Usar 4</label>
+			<input id="termB4" type="checkbox" value="4">
+      <span>|</span>
+			<label for="termB5">Usar 5</label>
+			<input id="termB5" type="checkbox" value="5">
+      <span>|</span>
+			<label for="termB6">Usar 6</label>
+			<input id="termB6" type="checkbox" value="6">
+      <span>|</span>
+			<label for="termB7">Usar 7</label>
+			<input id="termB7" type="checkbox" value="7">
+      <span>|</span>
+			<label for="termB8">Usar 8</label>
+			<input id="termB8" type="checkbox" value="8">
+      <span>|</span>
+			<label for="termB9">Usar 9</label>
+			<input id="termB9" type="checkbox" value="9">
+			<br />
+			<input class="smallButton" type="button" id="marcarTodos" onclick="marcarCheckbox('geradorContasN', true);" value="Marcar tudo">
+			<input class="smallButton" type="button" id="desmarcarTodos" onclick="marcarCheckbox('geradorContasN', false);" value="Desmarcar tudo">
+			<br />
+		
+		<strong>Quantos digitos deve ter o número que fica a esquerda? exemplo 5 dígitos é como <strong>13698</strong> x 4</strong>
+		<br />
+		<label>Digitos <strong>máximo</strong> para termo a esquerda: </label>
+		<input id="digitosMaxTermoA" type="number" min="2" step="1" value="5">
+		<br />
+		<input class="largeButton" type="submit" id="btnGerar" value="Gerar Contas, now!" />
+	</form>
+
+		<div id="contas" style="border: 5px dashed black; padding-left: 4px;" class="divContastabuada">
+		</div>
+</body>
+</html>
