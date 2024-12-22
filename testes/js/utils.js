@@ -148,3 +148,35 @@ class Gerador {
 		return false;
 	}
 }
+
+Math.fmod = function (a,b) { return Number((a - (Math.floor(a / b) * b)).toPrecision(8)); };
+
+
+function makeMultTerm ( minA, maxA, length, leftZero=true )
+{
+	let str = "";
+	let size = Math.abs(length);
+	
+	if (length < 0)
+		size = Math.floor(Math.random() * (size - 2 + 1) + 2);
+	
+	for (let i = 0; i < size; i++)
+		str += "" + Math.floor(RandInt(minA, maxA));
+
+	if (!leftZero) {
+		let aux = 0;
+		if (str.charAt(0) === "0") {
+			while (str.charAt(aux) == "0" && ++aux) ;
+			str = str.slice(aux, str.length);	
+		}
+	}
+	return str;
+}
+
+function marcarCheckbox ( formId, checked, termB ) {
+	let form = document.getElementById(formId);
+	for (let el of form.elements) {
+		if (el.type === "checkbox" && el.id.indexOf(termB) > -1)
+			el.checked = checked;
+	}
+}

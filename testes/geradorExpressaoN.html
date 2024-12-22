@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Gerador de Expressão em N</title>
+  <link type="text/css" rel="stylesheet" href="../css/styles.css">
+	<script src="./js/utils.js"></script>
+	<script src="./js/geradorExpressaoN.js"></script>
+</head>
+<body>
+  <form id="geradorExpressaoN" action="javascript:;" onsubmit="gerarExpressaoN(this, 'contasExpressaoN')">
+		<div>
+			<h1>Super Gerador de Expressões N:</h1>
+      <string>Escolha quais tipos de contas a expressão deve ter:</string>
+      <br />
+
+      <label for="chosenSum">somar
+			  <input id="chosenSum" type="checkbox" value="sum">
+    </label>
+    <br />
+    <label for="chosenSub">subtração
+			  <input id="chosenSub" type="checkbox" value="sub">
+    </label>
+    <br />
+    <label for="chosenMult">multiplicação
+      <input id="chosenMult" type="checkbox" value="mult">
+    </label>
+    <br />
+    <label for="chosenDiv">divisão
+      <input id="chosenDiv" type="checkbox" value="div">
+    </label>
+    <br />
+    <button class="smallButton" type="button" onclick="marcarCheckbox('geradorExpressaoN', true, 'chosen')">Todas</button>
+    <br />
+      <!--
+			<strong>Quais números da tabuada de SOMAR usar?</strong>
+			<br />
+			<label for="sumOptionsExprN1">|Usar 1
+				<input  id="sumOptionsExprN1" type="checkbox" name="sum" value="1">
+			</label>
+			<label for="sumOptionsExprN2">|Usar 2</label>
+			<input  id="sumOptionsExprN2" type="checkbox" value="2">
+			<label for="sumOptionsExprN3">|Usar 3</label>
+			<input  id="sumOptionsExprN3" type="checkbox" value="3">
+			<label for="sumOptionsExprN4">|Usar 4</label>
+			<input  id="sumOptionsExprN4" type="checkbox" value="4">
+			<label for="sumOptionsExprN5">|Usar 5</label>
+			<input  id="sumOptionsExprN5" type="checkbox" value="5">
+			<label for="sumOptionsExprN6">|Usar 6</label>
+			<input  id="sumOptionsExprN6" type="checkbox" value="6">
+			<label for="sumOptionsExprN7">|Usar 7</label>
+			<input  id="sumOptionsExprN7" type="checkbox" value="7">
+			<label for="sumOptionsExprN8">|Usar 8</label>
+			<input  id="sumOptionsExprN8" type="checkbox" value="8">
+			<label for="sumOptionsExprN9">|Usar 9</label>
+			<input  id="sumOptionsExprN9" type="checkbox" value="9">
+			<br />
+			<label for="sumQtdeTermN">
+				Quantas <strong>SOMAS</strong> deve ter?
+				<input  id="sumQtdeTermN" type="number" name="sum" min="1" step="1" value="3">
+			</label>
+      -->
+		</div>
+    <!--
+		<div>
+			<strong>Quais números da tabuada de SUBTRAIR usar?</strong>
+			<br />
+			<label for="subOptionsExprN1">|Usar 1</label>
+			<input id="subOptionsExprN1" type="checkbox" value="1">
+			<label for="subOptionsExprN2">|Usar 2</label>
+			<input id="subOptionsExprN2" type="checkbox" value="2">
+			<label for="subOptionsExprN3">|Usar 3</label>
+			<input id="subOptionsExprN3" type="checkbox" value="3">
+			<label for="subOptionsExprN4">|Usar 4</label>
+			<input id="subOptionsExprN4" type="checkbox" value="4">
+			<label for="subOptionsExprN5">|Usar 5</label>
+			<input id="subOptionsExprN5" type="checkbox" value="5">
+			<label for="subOptionsExprN6">|Usar 6</label>
+			<input id="subOptionsExprN6" type="checkbox" value="6">
+			<label for="subOptionsExprN7">|Usar 7</label>
+			<input id="subOptionsExprN7" type="checkbox" value="7">
+			<label for="subOptionsExprN8">|Usar 8</label>
+			<input id="subOptionsExprN8" type="checkbox" value="8">
+			<label for="subOptionsExprN9">|Usar 9</label>
+			<input id="subOptionsExprN9" type="checkbox" value="9">
+			<br />
+			<label for="subQtdeTermN">
+				Quantas <strong>SUBTRAÇÃO</strong> deve ter?
+				<input  id="subQtdeTermN" type="number" name="sub" min="0" step="1" value="0">
+			</label>
+		</div>
+		<div>
+			<strong>Quais números da tabuada de MULTIPLICAR usar?</strong>
+			<br />
+			<label class="divCheckbox" for="multOptionsExprN1">|Usar 1</label>
+			<input id="multOptionsExprN1" type="checkbox" value="1">
+			<label for="multOptionsExprN2">|Usar 2</label>
+			<input id="multOptionsExprN2" type="checkbox" value="2">
+			<label for="multOptionsExprN3">|Usar 3</label>
+			<input id="multOptionsExprN3" type="checkbox" value="3">
+			<label for="multOptionsExprN4">|Usar 4</label>
+			<input id="multOptionsExprN4" type="checkbox" value="4">
+			<label for="multOptionsExprN5">|Usar 5</label>
+			<input id="multOptionsExprN5" type="checkbox" value="5">
+			<label for="multOptionsExprN6">|Usar 6</label>
+			<input id="multOptionsExprN6" type="checkbox" value="6">
+			<label for="multOptionsExprN7">|Usar 7</label>
+			<input id="multOptionsExprN7" type="checkbox" value="7">
+			<label for="multOptionsExprN8">|Usar 8</label>
+			<input id="multOptionsExprN8" type="checkbox" value="8">
+			<label for="multOptionsExprN9">|Usar 9</label>
+			<input id="multOptionsExprN9" type="checkbox" value="9">
+			<br />
+			<label for="multQtdeTermN">
+				Quantas <strong>MULTIPLICAÇÃO</strong> deve ter?
+				<input  id="multQtdeTermN" type="number" name="mult" min="0" step="1" value="3">
+			</label>
+		</div>
+		<div>
+			<strong>Quais números da tabuada de DIVIDIR usar?</strong>
+			<br />
+			<label for="divOptionsExprN1">|Usar 1</label>
+			<input id="divOptionsExprN1" type="checkbox" value="1">
+			<label for="divOptionsExprN2">|Usar 2</label>
+			<input id="divOptionsExprN2" type="checkbox" value="2">
+			<label for="divOptionsExprN3">|Usar 3</label>
+			<input id="divOptionsExprN3" type="checkbox" value="3">
+			<label for="divOptionsExprN4">|Usar 4</label>
+			<input id="divOptionsExprN4" type="checkbox" value="4">
+			<label for="divOptionsExprN5">|Usar 5</label>
+			<input id="divOptionsExprN5" type="checkbox" value="5">
+			<label for="divOptionsExprN6">|Usar 6</label>
+			<input id="divOptionsExprN6" type="checkbox" value="6">
+			<label for="divOptionsExprN7">|Usar 7</label>
+			<input id="divOptionsExprN7" type="checkbox" value="7">
+			<label for="divOptionsExprN8">|Usar 8</label>
+			<input id="divOptionsExprN8" type="checkbox" value="8">
+			<label for="divOptionsExprN9">|Usar 9</label>
+			<input id="divOptionsExprN9" type="checkbox" value="9">
+			<br />
+			<label for="divQtdeTermN">
+				Quantas <strong>DIVISÃO</strong> deve ter?
+				<input  id="divQtdeTermN" type="number" name="div" min="0" step="1" value="0">
+			</label>
+		</div>
+		<br />
+    -->
+    <!--
+		<div style="display: inline-block;">
+			<Label for="expNDigitsTermA">Quantos digitos deve ter os no MÁXIMO os termos a esquerda?</label>
+				
+			<input id="expNDigitsTermA" type="number" min="2" step="1" value="2">
+			<br />
+			<span>Exemplo se 2, então aparecerá algo como: 12 x 5 ou 37 + 8, etc</span>
+		</div>
+    -->
+		<br />
+		<Label for="qtdeExpressao">Quantas EXPRESSÔES deve ser geradas?</label>
+		<input id="qtdeExpressao" type="number" min="5" step="1" value="10">
+		<br />
+    
+		<button class="largeButton" type="submit">Gerar expressão</button>
+	</form>
+	<div id="contasExpressaoN" style="border: 5px dashed black; padding-left: 4px; " class="divExpressaoN">
+	</div>
+</body>
+</html>
