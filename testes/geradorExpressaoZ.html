@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Gerador de Expressão em N</title>
+  <title>Super Gerador de Expressão em Z</title>
   <link type="text/css" rel="stylesheet" href="../css/styles.css">
 	<script src="./js/utils.js"></script>
-	<script src="./js/geradorExpressaoN.js"></script>
+	<script src="./js/geradorExpressaoZ.js"></script>
 </head>
 <body>
-  <form id="geradorExpressaoN" action="javascript:;" onsubmit="gerarExpressaoN(this, 'contasExpressaoN')">
+  <form id="geradorExpressaoZ" action="javascript:;" onsubmit="gerarExpressaoZ(this, 'contasExpressaoZ')">
 		<div>
-			<h1>Super Gerador de Expressões N:</h1>
+			<h1>Super Gerador de Expressões Z:</h1>
       <string>Escolha quais tipos de contas a expressão deve ter:</string>
       <br />
 
@@ -31,7 +31,7 @@
         <input id="chosenDiv" type="checkbox" value="div">
       </label>
       <br />
-      <button class="smallButton" type="button" onclick="marcarCheckbox('geradorExpressaoN', true, 'chosen')">Todas</button>
+      <button class="smallButton" type="button" onclick="marcarCheckbox('geradorExpressaoZ', true, 'chosen')">Todas</button>
       <br />
 		</div>
 		<br />
@@ -42,7 +42,7 @@
     
 		<button class="largeButton" type="submit">Gerar expressão</button>
 	</form>
-	<div id="contasExpressaoN" style="border: 5px dashed black; padding-left: 4px; " class="divExpressaoN">
+	<div id="contasExpressaoZ" style="border: 5px dashed black; padding-left: 4px; " class="divExpressaoN">
 	</div>
 </body>
 </html>
