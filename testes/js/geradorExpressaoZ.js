@@ -40,10 +40,12 @@ class GeradorExpressaoZ {
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
 		const formatosBase = this.optionsTable.formatosBase || [
-      'a +b',
-      'a -b',
       'a sb',
 		];
+    if (this.optionsTable.oper["sub"]) {
+      formatosBase.splice(0, 1);
+      formatosBase.push('a -b');
+    }
     if (this.optionsTable.oper["mult"]) {
       formatosBase.push('a * (sb)');
       formatosBase.push('a * (-b)');
@@ -60,8 +62,7 @@ class GeradorExpressaoZ {
 		let formatos = formatosBase;//this.optionsTable.withParenteses? formatosBase: formatoSemParenteses;
 
     const sinal = ['-', '+'];
-    const sinalLink = ['+', '-'];
-		
+    const sinalLink = ['-','+'];		
 		
     console.log(this.optionsTable.qtdeMonomio);
 		for (let t = 0; t < 100; t++) {
