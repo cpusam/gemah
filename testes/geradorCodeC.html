@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code C</title>
+  <style>
+    .ident1 {
+      margin-left: 25px;
+    }
+    .ident2 {
+      margin-left: 50px;
+    }
+    .ident3 {
+      margin-left: 75px;
+    }
+
+    .wrongAnswer {
+      background-color: rgb(252, 87, 87);
+    }
+    .rightAnswer {
+      background-color: rgb(141, 238, 141);
+    }
+    body {
+      background-color: aliceblue;  
+    }
+    .smallButton {
+      background-color: #04AA6D; /* Green */
+      border: none;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <script src="./js/utils.js"></script>
+  <script src="./js/geradorCodeC.js"></script>
+  
+  <div id="codeDiv">
+    <form id="code" onsubmit="corrigirRespostas('code', 'sourceC')" action="javascript:;">
+      <div>
+        <button type="button" class="smallButton" onclick="generateCode('code', 'sourceC')">Gerar código</button>
+      </div>
+      <div>
+        <strong>Marque quais mensagens serão imprimidas na tela:</strong>
+      </div>
+      <div id="sourceC">
+        <span style="color: green;">#include &lt;stdio.h&gt;</span><br>
+        <br>
+        <span>int main() {</span><br>
+          <span class="ident1">int num = 5;</span><br>
+          <br>
+          <span class="ident1">//Clique em gerar código</span>
+          <br>
+          <span class="ident1">return 0;</span><br>
+        <span>}</span><br>
+      </div>
+      <div id="result"></div><br>
+      <button type="submit" class="smallButton">Corrigir</button>
+      <button type="button" class="smallButton" onclick="generateCode('code', 'sourceC')">Tentar novamente</button>
+      <br>
+  </form>
+  </div>
+  <br>
+  
+</body>
+</html>
