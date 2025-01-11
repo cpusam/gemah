@@ -26,6 +26,7 @@ class GeradorExpressaoZ {
 		//em 01/02/2023 às 15:56
     //a = um número qualquer escolhido
     //b = um número qualquer escolhido que vem depois de um 'a' ou 'A' escolhido
+    //c = um número entre 1 e 5
 		//s = sinal + ou -
     //n = sinal negativo
 		//A = quadrado de um número a
@@ -53,6 +54,12 @@ class GeradorExpressaoZ {
     if (this.optionsTable.oper["div"]) {
       formatosBase.push('Q / (sq)');
       formatosBase.push('Q / (-q)');
+    }
+    //expoente
+    if (this.optionsTable.oper["exp"]) {
+      formatosBase.push('c^2');
+      formatosBase.push('c^2 + (-c)^2');
+      formatosBase.push('(-c)^3');
     }
 
     const formatoSemParenteses = this.optionsTable.formatosSemParenteses || [
@@ -83,12 +90,7 @@ class GeradorExpressaoZ {
         let A = 0;
         let b = 0;
         let B = 0;
-        let s = '';
-
-        let hasPotency = forma.indexOf('^') > -1;
-        if (hasPotency)
-          expJS += 'Math.pow(';
-          
+        let s = '';         
 
 				{
           let tokens = [];
@@ -101,6 +103,8 @@ class GeradorExpressaoZ {
             ok = b <= a;
           }
 
+          let c = RandInt(1, 5);
+
           s = sinal[RandInt(0, sinal.length - 1)];
           
           //formato das expressões binárias
@@ -109,11 +113,13 @@ class GeradorExpressaoZ {
           //o = operador binário pode ser && ou || (E ou OU para o user)
           //i = inverso lógico (negação)
           let Q = 0, q = 0;
+          let lastSetted = "";
             for (let j = 0; forma.charAt(j); j++) {
               switch (forma.charAt(j)) {
                 case 'a':
                   a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
                   A = a * a;
+                  lastSetted = "a";
                   expUser += ' '+a;
                   expJS += ' '+a;
                   tokens.push(a);
@@ -125,18 +131,31 @@ class GeradorExpressaoZ {
                     B = b * b;
                     ok = b <= a;
                   }
+                  lastSetted = "b";
                   expUser += ' '+b;
                   expJS += ' '+b;
                   tokens.push(b);
                   break;
+
+                  case 'c': {
+                    lastSetted = "c";
+                    expUser += ' '+c;
+                    expJS += ' '+c;
+                    tokens.push(c);
+                  }
+                  break;
+
+                
                 case 'A':
                   expUser += ' '+A;
                   expJS += ' '+A;
+                  lastSetted = "A";
                   tokens.push(A);
                   break;
                 case 'B':
                   expUser += ' '+B;
                   expJS += ' '+B;
+                  lastSetted = "B";
                   tokens.push(B);
                   break;
                 case'D':
@@ -144,6 +163,7 @@ class GeradorExpressaoZ {
                     let D = 2 * a * b;
                     expUser += ' '+D;
                     expJS += ' '+D;
+                    lastSetted = "D";
                     tokens.push(D);
                   }
                   break;
@@ -163,7 +183,59 @@ class GeradorExpressaoZ {
                   }
                   break;
                 //não coloca esses chars
-                case '^':
+                case '^': {
+                  let p = "";
+                  let con = 1;
+                  for (let k = j + 1; con; k++) {
+                    let ch = forma.charAt(k);
+                    if (ch >= '0' && ch <= '9') {
+                      p += ch;
+                    }
+                    else {
+                      j = k;
+                      con = 0;
+                      break;
+                    }
+                  }
+
+                  let valueBefore = null;
+                  switch(lastSetted) {
+                    case 'A':
+                      valueBefore = A;
+                      break;
+                    case 'B':
+                      valueBefore = B;
+                      break;
+                    case 'D':
+                      valueBefore = D;
+                      break;
+                    case 'a':
+                      valueBefore = a;
+                      break;
+                    case 'b':
+                      valueBefore = b;
+                      break;
+                    case 'c':
+                      valueBefore = c;
+                      break;
+                    default:
+                      valueBefore = null;
+                      break;
+                  }
+
+                  if (valueBefore) {
+                    let hasParenteses = forma.charAt(j-1) === ')';
+                    let r = Math.pow(valueBefore, parseInt(p));
+                    console.log("valueBefore = '"+valueBefore+"'");
+                    console.log("p = '"+p+"'");
+                    expJS += ' '+s+r;
+                    expUser += ' '+s
+                    +(hasParenteses?'(':'')
+                    +valueBefore
+                    +(hasParenteses?')':'')+'^'+p;
+                  }
+                }
+                break;
                 case 'p':
                   expUser += '^2';
                   tokens.push('^2');
@@ -198,14 +270,10 @@ class GeradorExpressaoZ {
             }
 
           if (last !== 'e') {
-            console.log('['+total+'] = '+last+' exp \''+expUser+'\'');
-            console.log('['+total+'] = '+last+' exp \''+expJS+'\'');
+            console.log('['+total+'] expUser = '+last+' exp \''+expUser+'\'');
+            console.log('['+total+'] expJS = '+last+' exp \''+expJS+'\'');
           }
 				}
-
-        if (hasPotency) {
-          expJS += ','+'2'+')';
-        }
 
         if (total != lastMonomio) {
           expUser += ' '+opLink;
@@ -270,6 +338,10 @@ function gerarExpressaoZ ( form, targetId ) {
       else if (el.id.indexOf('chosenSum') > -1) {
         qtdeOper["sum"] = RandInt(1, 3);
         oper['sum'] = 1;
+      }
+      else if (el.id.indexOf('chosenExp') > -1) {
+        qtdeOper["exp"] = true;
+        oper["exp"] = true;
       }
     }
     else if (el.id.indexOf('qtdeExpressao') > -1) {
