@@ -69,7 +69,7 @@ function generateCode(formId, codeId) {
     lessOrEqualsThan: () =>{
       let text = ''+declaredNum+' <= '+usedEnd;
       if (declaredEnd)
-        text = ''+declaredNum+' M= '+declaredEnd;
+        text = ''+declaredNum+' <= '+declaredEnd;
 
       let result = usedNum <= usedEnd;
       return {text, result};
