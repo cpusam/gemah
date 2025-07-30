@@ -1,4 +1,4 @@
-const score = {
+let score = {
   total: 0,
   corrects: 0,
   wrongs: 0,
@@ -24,6 +24,13 @@ function diminuirPonto(idQuestion) {
 }
 
 function gerarQuestaoC(form, targetID) {
+  score = {
+    total: 0,
+    corrects: 0,
+    wrongs: 0,
+    tried:[]
+  };
+
   let operators = [];
   let signal = [];
   let operatorsName = [];
