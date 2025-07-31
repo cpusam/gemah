@@ -31,6 +31,7 @@ function verificarResposta(idQuestion, answer, elementID, typed, resultID) {
   for (let i = 0; i < str.length; i++)
     ok += str[i] === answer[i];
   if (config.liveAnswer) {
+    //https://emojidb.org/
     if (ok === str.length)
       document.getElementById(resultID).textContent = "✅";
     else
