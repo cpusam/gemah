@@ -153,8 +153,8 @@ function gerarQuestaoC(form, targetID) {
     htmlStr += "<fieldset>\n";
     htmlStr += "<legend>Qual expressão representa a frase: <strong>"+correctPhrase+"</strong> ?</legend><br/>\n";
     let options = [
-      "<label><input type='radio' name='answer"+i+"' value='1' onclick='somarPonto("+i+")' >"+correctStr+"</label><br/>\n",
-      "<label><input type='radio' name='answer"+i+"' value='0' onclick='diminuirPonto("+i+")'>"+wrong+"</label><br/>\n",
+      "<label><div><input type='radio' name='answer"+i+"' value='1' onclick='somarPonto("+i+")' >"+correctStr+"</label></div><br/>\n",
+      "<label><div><input type='radio' name='answer"+i+"' value='0' onclick='diminuirPonto("+i+")'>"+wrong+"</label></div><br/>\n",
     ];
     
     shuffle(options);
