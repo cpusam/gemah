@@ -258,3 +258,37 @@ legend {
   box-shadow: 0 0 10px #666;
   background-color: #36393f;
 }
+
+.answerToken {
+  background-color: #6aac64;
+  border: none;
+  border-radius: 8px;
+  color: rgb(0, 0, 0);
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: large;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.answerDel {
+  background-color: #c44b4b;
+  border: none;
+  border-radius: 8px;
+  color: rgb(0, 0, 0);
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: large;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.inputAnswer {
+  border: 1px solid #666;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #666;
+  background-color: #36393f;
+  width: 100px;
+}

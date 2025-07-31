@@ -1,5 +1,9 @@
 let score = {
 };
+let config = {
+
+};
+
 function somarPonto(idQuestion) {
   if (score.tried.indexOf(idQuestion) > -1)
     return;
@@ -19,12 +23,53 @@ function diminuirPonto(idQuestion) {
   document.getElementById("total").innerText = score.total;
 }
 
+function verificarResposta(idQuestion, answer, elementID, typed, resultID) {
+  if (typed)
+    document.getElementById(elementID).textContent += typed;
+  let str = document.getElementById(elementID).textContent;
+  let ok = 0;
+  for (let i = 0; i < str.length; i++)
+    ok += str[i] === answer[i];
+  if (config.liveAnswer) {
+    if (ok === str.length)
+      document.getElementById(resultID).textContent = "✅";
+    else
+      document.getElementById(resultID).textContent = "❌";
+  }
+
+  if (str === answer) {
+    somarPonto(idQuestion); 
+    document.getElementById(resultID).textContent = "👍";
+  }
+}
+
+
+function desfazerUltimo(idQuestion, answer, elementID, typed, resultID) {
+  let str = document.getElementById(elementID).textContent;
+  if (str.length === 0)
+    return;
+
+  let ok = "";
+  for (let i = 0; i < str.length - 1; i++)
+    ok += str[i];
+  document.getElementById(elementID).textContent = ok;
+  verificarResposta(idQuestion, answer, elementID, undefined, resultID);
+}
+
+function limparResposta(idQuestion, answer, elementID) {
+  document.getElementById(elementID).textContent = "";
+}
+
 function gerarQuestaoC(form, targetID) {
   score = {
     total: 0,
     corrects: 0,
     wrongs: 0,
     tried:[]
+  };
+
+  config = {
+    liveAnswer: false,
   };
 
   let operators = [];
@@ -46,6 +91,7 @@ function gerarQuestaoC(form, targetID) {
   };
   let qtde = 10;
   let maxTerms = 5;
+  let mode = "select";
   for (let el of form.elements) {
 		if (el.id.indexOf('somar') > -1) {
 			signal.push("+");
@@ -67,6 +113,15 @@ function gerarQuestaoC(form, targetID) {
       //tem um bug que deixa adicionar um numero a mais
 			maxTerms = parseInt(el.value) - 1;
 		}
+    else if (el.name.indexOf('mode') > -1 && el.checked) {
+      mode = el.value;
+		}
+    else if (el.name.indexOf('liveAnswer') > -1 && el.value === "yes" && el.checked) {
+      config.liveAnswer = true;
+		}
+    else if (el.name.indexOf('liveAnswer') > -1 && el.value === "no" && el.checked) {
+      config.liveAnswer = false;
+		}
 	}
 
   if (!signal.length) {
@@ -77,13 +132,15 @@ function gerarQuestaoC(form, targetID) {
     operators = ["/","*"];
     operatorsName = ["dividido por", "vezes"];
   }
-
+  let tokens = [];
   let callback = (gerador, strValue, nodeType)=>{
     switch (nodeType) {
       case NodeTypes.NUMBER:{
         gerador.expressionPhrase += " " + numbers[strValue];
         gerador.expressionStr += " "+ strValue;
         console.log("callback.NUMBER '"+strValue+"' type = "+nodeType)
+        if (gerador.tokens.indexOf(strValue) === -1)
+          gerador.tokens.push(strValue);
         break;
       }
       case NodeTypes.SIGNAL:{
@@ -92,6 +149,8 @@ function gerarQuestaoC(form, targetID) {
           return;
         gerador.expressionPhrase += " "+signalName[id];
         gerador.expressionStr += " "+ signal[id];
+        if (gerador.tokens.indexOf(strValue) === -1)
+          gerador.tokens.push(strValue);
         break;
       }
       case NodeTypes.PAREN:{
@@ -100,6 +159,8 @@ function gerarQuestaoC(form, targetID) {
           return;
         gerador.expressionPhrase += " "+paren[strValue];
         gerador.expressionStr += " "+ strValue;
+        if (gerador.tokens.indexOf(strValue) === -1)
+          gerador.tokens.push(strValue);
         break;
       }
       case NodeTypes.OPERATOR:{
@@ -108,6 +169,8 @@ function gerarQuestaoC(form, targetID) {
           return;
         gerador.expressionPhrase += " "+operatorsName[id];
         gerador.expressionStr += " "+ operators[id];
+        if (gerador.tokens.indexOf(strValue) === -1)
+          gerador.tokens.push(strValue);
         break;
       }
     }
@@ -119,6 +182,7 @@ function gerarQuestaoC(form, targetID) {
   htmlStr+="<div id='questions'>";
   for (let i = 0; i < qtde; ) {
     gerador.doExpression();
+    tokens = gerador.tokens;
     let correctPhrase = gerador.expressionPhrase;
     let correctStr = gerador.expressionStr;
     let wrong = gerador.expressionStr;
@@ -152,15 +216,28 @@ function gerarQuestaoC(form, targetID) {
     htmlStr+="<div>\n";
     htmlStr += "<fieldset>\n";
     htmlStr += "<legend>Qual expressão representa a frase: <strong>"+correctPhrase+"</strong> ?</legend><br/>\n";
-    let options = [
-      "<label><div><input type='radio' name='answer"+i+"' value='1' onclick='somarPonto("+i+")' >"+correctStr+"</label></div><br/>\n",
-      "<label><div><input type='radio' name='answer"+i+"' value='0' onclick='diminuirPonto("+i+")'>"+wrong+"</label></div><br/>\n",
-    ];
-    
-    shuffle(options);
+    if (mode === "select") {
+      let options = [
+        "<label><div><input type='radio' name='answer"+i+"' value='1' onclick='somarPonto("+i+")' >"+correctStr+"</label></div><br/>\n",
+        "<label><div><input type='radio' name='answer"+i+"' value='0' onclick='diminuirPonto("+i+")'>"+wrong+"</label></div><br/>\n",
+      ];
+      
+      shuffle(options);
 
-    for (let o of options) 
-      htmlStr += o;
+      for (let o of options) 
+        htmlStr += o;
+    }
+    else {
+      htmlStr += "<div id='controlsAnswer'>";
+        shuffle(tokens);
+        htmlStr += "<div><strong id='inputAnswer"+i+"' class='inputAnswer'></strong><span id='result"+i+"'></span></div><br/>"
+        for (let j = 0; j < tokens.length; j++)
+          htmlStr += "<button class='answerToken' onclick='verificarResposta("+i+",`"+gerador.expressionStrJS+"`, `inputAnswer"+i+"`, `"+tokens[j]+"`,`result"+i+"` )'>"+tokens[j]+"</button>";
+        htmlStr += "<button class='answerDel' onclick='limparResposta("+i+",`"+gerador.expressionStrJS+"`, `inputAnswer"+i+"`)'>DEL</button>";
+        htmlStr += "<button class='answerDel' onclick='desfazerUltimo("+i+",`"+gerador.expressionStrJS+"`, `inputAnswer"+i+"`,`result"+i+"`)'>⌫</button>";
+        htmlStr += "<br/>";
+      htmlStr += "</div>";
+    }
     htmlStr += "</fieldset>\n";
     htmlStr+="</div><br/>\n";
   }

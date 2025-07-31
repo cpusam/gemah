@@ -21,6 +21,18 @@
       <Label for="maxTerms">Quantos <strong>Números</strong> deve ter cada expressão?</label>
       <input id="maxTerms" type="number" min="2" step="1" value="4">
       <br />
+      <label>Modo de <strong>Resposta</strong>:</label>
+      <span>
+        <label><input type="radio" name="mode" value="select" checked >Selecionar</label>
+        <label><input type="radio" name="mode" value="write">Digitar</label>
+      </span>
+      <br/>
+      <label>Corrigir resposta assim que digitar?</label>
+      <span>
+        <label><input type="radio" name="liveAnswer" value="yes" checked>Sim</label>
+        <label><input type="radio" name="liveAnswer" value="no">Não</label>
+      </span>
+      <br />
       <button type="submit" class="largeButton">Gerar perguntas</button>
     </form>
     <!--Aqui fica as perguntas que aparecem para responder ou clicar na resposta-->

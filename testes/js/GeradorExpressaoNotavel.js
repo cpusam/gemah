@@ -73,6 +73,7 @@ class GeradorExpressaoNotavel {
       this.tokenProcessorCallback = ()=>{};
     this.minNumberValue = this.options.minNumberValue || 0;
     this.maxNumberValue = this.options.maxNumberValue || 100;
+    this.tokens = [];
     this.symbols = [];
     this.startList = [];
     this.startSymbol = null;
@@ -112,6 +113,7 @@ class GeradorExpressaoNotavel {
     this.expressionStr = "";
     this.expressionPhrase = "";
     this.expressionWrongStr = "";
+    this.tokens = [];
     this.answer = "";
     this.terms = 0;
     this.level = 0;
