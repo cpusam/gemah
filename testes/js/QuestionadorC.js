@@ -1,8 +1,4 @@
 let score = {
-  total: 0,
-  corrects: 0,
-  wrongs: 0,
-  tried:[]
 };
 function somarPonto(idQuestion) {
   if (score.tried.indexOf(idQuestion) > -1)
@@ -47,7 +43,7 @@ function gerarQuestaoC(form, targetID) {
     "7":"sete",
     "8":"oito",
     "9":"nove",
-  }
+  };
   let qtde = 10;
   let maxTerms = 5;
   for (let el of form.elements) {
@@ -86,7 +82,6 @@ function gerarQuestaoC(form, targetID) {
     switch (nodeType) {
       case NodeTypes.NUMBER:{
         gerador.expressionPhrase += " " + numbers[strValue];
-        gerador.expressionWrongStr += " "+ strValue;
         gerador.expressionStr += " "+ strValue;
         console.log("callback.NUMBER '"+strValue+"' type = "+nodeType)
         break;
@@ -96,13 +91,6 @@ function gerarQuestaoC(form, targetID) {
         if (id < 0)
           return;
         gerador.expressionPhrase += " "+signalName[id];
-        let wrongID = id;
-        if (RandInt(0, 1) === 1) {
-          do {
-            wrongID = RandInt(0, signal.length - 1);
-          } while(wrongID === id);
-        }
-        gerador.expressionWrongStr += " "+signal[wrongID];
         gerador.expressionStr += " "+ signal[id];
         break;
       }
@@ -111,7 +99,6 @@ function gerarQuestaoC(form, targetID) {
         if (!id)
           return;
         gerador.expressionPhrase += " "+paren[strValue];
-        gerador.expressionWrongStr += " " + strValue;
         gerador.expressionStr += " "+ strValue;
         break;
       }
@@ -120,13 +107,6 @@ function gerarQuestaoC(form, targetID) {
         if (id < 0)
           return;
         gerador.expressionPhrase += " "+operatorsName[id];
-        let wrongID = id;
-        if (RandInt(0, 1) === 1) {
-          do {
-            wrongID = RandInt(0, operators.length - 1);
-          } while(wrongID === id);
-        }
-        gerador.expressionWrongStr += " "+operators[wrongID];
         gerador.expressionStr += " "+ operators[id];
         break;
       }
@@ -141,8 +121,33 @@ function gerarQuestaoC(form, targetID) {
     gerador.doExpression();
     let correctPhrase = gerador.expressionPhrase;
     let correctStr = gerador.expressionStr;
-    let wrong = gerador.expressionWrongStr;
-    
+    let wrong = gerador.expressionStr;
+    let changed = false;
+    do {
+      let strNewSignal = "", position = -1;
+      for (let j = 0; j < gerador.expressionStr.length; j++) {
+        let id = signal.indexOf(gerador.expressionStr[j]);
+        if (id > -1) {
+          if (RandInt(0, 1) === 1) {
+            do {
+              strNewSignal = signal[RandInt(0, signal.length - 1)];
+            } while (strNewSignal === signal[id]);
+            position = j;
+            changed = true;
+          }
+        }
+      }
+      
+      if (changed) {
+        wrong = "";
+        for (let j = 0; j < gerador.expressionStr.length; j++) {
+          if (j === position)
+            wrong += strNewSignal;
+          else
+            wrong += gerador.expressionStr[j];
+        }
+      }
+    } while (!changed);
     i++;
     htmlStr+="<div>\n";
     htmlStr += "<fieldset>\n";
