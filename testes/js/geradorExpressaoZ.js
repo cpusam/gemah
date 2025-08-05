@@ -62,6 +62,14 @@ class GeradorExpressaoZ {
       formatosBase.push('(-c)^3');
     }
 
+    //parênteses
+    if (this.optionsTable.oper["paren"]) {
+      formatosBase.push('(sa s b s c)');
+      formatosBase.push('(sa s b s c) * (sa)');
+      formatosBase.push('(sQ / (sq) sQ / (sq)) * (sc)');
+      formatosBase.push(' (sc) * (sQ / (sq) sQ / (sq))');
+    }
+
     const formatoSemParenteses = this.optionsTable.formatosSemParenteses || [
       'a + b',
 		];
@@ -342,6 +350,10 @@ function gerarExpressaoZ ( form, targetId ) {
       else if (el.id.indexOf('chosenExp') > -1) {
         qtdeOper["exp"] = true;
         oper["exp"] = true;
+      }
+      else if (el.id.indexOf('chosenParen') > -1) {
+        qtdeOper["paren"] = true;
+        oper["paren"] = true;
       }
     }
     else if (el.id.indexOf('qtdeExpressao') > -1) {
