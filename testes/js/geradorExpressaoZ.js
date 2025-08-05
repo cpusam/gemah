@@ -63,11 +63,24 @@ class GeradorExpressaoZ {
     }
 
     //parênteses
+    //fazer dividido por tópicos foi muito bom pra adicionar novas opções
     if (this.optionsTable.oper["paren"]) {
-      formatosBase.push('(sa s b s c)');
-      formatosBase.push('(sa s b s c) * (sa)');
-      formatosBase.push('(sQ / (sq) sQ / (sq)) * (sc)');
-      formatosBase.push(' (sc) * (sQ / (sq) sQ / (sq))');
+      //opção default
+      formatosBase.push('(sa +b)');
+      formatosBase.push('(-a sb)');
+      formatosBase.push('(sa sb)');
+      formatosBase.push('(sa sb sc)');
+      //opção de div
+      if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
+        formatosBase.push('(sQ / (sq) sQ / (sq)) * (sc)');
+        formatosBase.push('(sc) * (sQ / (sq) sQ / (sq))');
+      }
+      else if (this.optionsTable.oper['mult']) {
+        formatosBase.push('(sa s b s c) * (sa)');
+      } 
+      else if (this.optionsTable.oper['div']) {
+        formatosBase.push('(sQ / (sq) + sQ / (sq))');
+      }
     }
 
     const formatoSemParenteses = this.optionsTable.formatosSemParenteses || [
@@ -384,7 +397,7 @@ function gerarExpressaoZ ( form, targetId ) {
 		+gerador.expressionStr
 		+'</strong>'
 		+'<br />'
-		+'<button type="button" onclick="showExprNResp('+i+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
+		+'<button type="button" onclick="showExprNResp('+(i+1)+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
 		+'Ver resposta Expressão N-'+(i+1)
 		+'</button><br /></p>';
 	}
