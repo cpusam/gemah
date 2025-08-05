@@ -65,18 +65,21 @@ class GeradorExpressaoZ {
     //parênteses
     //fazer dividido por tópicos foi muito bom pra adicionar novas opções
     if (this.optionsTable.oper["paren"]) {
-      //opção default
-      formatosBase.push('(sa +b)');
-      formatosBase.push('(-a sb)');
-      formatosBase.push('(sa sb)');
-      formatosBase.push('(sa sb sc)');
+      //opção default é apenas soma
+      formatosBase.push('(+a +b)');
+      //subtração ou aleatórios
+      if (this.optionsTable.oper['sub']) {
+        formatosBase.push('(sa sb)');
+        formatosBase.push('(sa sb sc)');
+      }
       //opção de div
       if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
         formatosBase.push('(sQ / (sq) sQ / (sq)) * (sc)');
         formatosBase.push('(sc) * (sQ / (sq) sQ / (sq))');
       }
       else if (this.optionsTable.oper['mult']) {
-        formatosBase.push('(sa s b s c) * (sa)');
+        formatosBase.push('(sa sb sc) * (sa)');
+        formatosBase.push('(sa sb s(sa sb)) * (sc)');
       } 
       else if (this.optionsTable.oper['div']) {
         formatosBase.push('(sQ / (sq) + sQ / (sq))');
