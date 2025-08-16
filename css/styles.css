@@ -27,6 +27,10 @@ strong {
   background-color: #b6b8bc;
 }
 
+.preserveSpaces {
+  white-space: pre;
+}
+
 input {
   background-color: #b6b8bc;
 }

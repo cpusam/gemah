@@ -19,7 +19,7 @@ class GeradorExpressaoZ {
 		this.expressionStr = "";
 	}
 
-	doExpression () {
+	async doExpression () {
 		this.reset();
 		let expressionStr = "";
 		
@@ -37,6 +37,7 @@ class GeradorExpressaoZ {
     //i = iniciar tudo para a expressão seguinte, tipo resetar valores para usar nos próximos tokenbs do formato
     //Q = dividendo tabuada de vididir
     //q = divisor de 'q' tabuada de dividir 
+    //t = numero de 0 até 5
     //NOTA: entre cada formato é escolhido um sinal s
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
@@ -57,9 +58,16 @@ class GeradorExpressaoZ {
     }
     //expoente
     if (this.optionsTable.oper["exp"]) {
-      formatosBase.push('c^2');
-      formatosBase.push('c^2 + (-c)^2');
+      formatosBase.push('(c^(2))');
+      formatosBase.push('(c^(2)) + (-c)^2');
       formatosBase.push('(-c)^3');
+    }
+
+    //expoente
+    if (this.optionsTable.oper["expComParen"]) {
+      formatosBase.push('((sc)^(t))');
+      formatosBase.push('((sc)^(t))*(sa)');
+      formatosBase.push('((sc)^(t))*(sa)*(sQ/(sq))');
     }
 
     //parênteses
@@ -94,15 +102,19 @@ class GeradorExpressaoZ {
 
     const sinal = ['-', '+'];
     const sinalLink = ['-','+'];		
-		
+		let valid = 0;
+
     console.log(this.optionsTable.qtdeMonomio);
 		for (let t = 0; t < 100; t++) {
 			let expUser = '';//expressão para o usuário
       let expJS = '';//expressão para o javascript calcular
-			
+			let vars = [];
+      let varsCount = 0;
+
 			let chosenFormas = [];
       const maxMonomio = this.optionsTable.qtdeMonomio;// RandInt(2, this.optionsTable.qtdeMonomio);
 			for (let total = 0, lastMonomio = maxMonomio - 1; total < maxMonomio; total++) {
+        varsCount++;
         //escolhe a forma
 				let forma = formatos[RandInt(0, formatos.length - 1)];
         chosenFormas.push(forma);
@@ -116,6 +128,8 @@ class GeradorExpressaoZ {
         let B = 0;
         let s = '';         
 
+        let strForma = "";
+        let varsForma = [];
 				{
           let tokens = [];
           a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
@@ -128,6 +142,7 @@ class GeradorExpressaoZ {
           }
 
           let c = RandInt(1, 5);
+          let t = RandInt(0, 5);
 
           s = sinal[RandInt(0, sinal.length - 1)];
           
@@ -138,182 +153,145 @@ class GeradorExpressaoZ {
           //i = inverso lógico (negação)
           let Q = 0, q = 0;
           let lastSetted = "";
-            for (let j = 0; forma.charAt(j); j++) {
-              switch (forma.charAt(j)) {
-                case 'a':
-                  a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
-                  A = a * a;
-                  lastSetted = "a";
-                  expUser += ' '+a;
-                  expJS += ' '+a;
-                  tokens.push(a);
-                  break;
-                case 'b':
-                  ok = false;
-                  while (!ok) {
-                    b = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
-                    B = b * b;
-                    ok = b <= a;
-                  }
-                  lastSetted = "b";
-                  expUser += ' '+b;
-                  expJS += ' '+b;
-                  tokens.push(b);
-                  break;
+          const setVar = (name, v)=>{
+            return String(name)+varsCount+"="+v+" ";
+          }
+          const getVarName = (name)=>{
+            return String(name)+varsCount;
+          }
 
-                  case 'c': {
-                    lastSetted = "c";
-                    expUser += ' '+c;
-                    expJS += ' '+c;
-                    tokens.push(c);
-                  }
-                  break;
+          for (let j = 0; forma.charAt(j); j++) {
+            let varName = "";
+            let value = 0;
+            switch (forma.charAt(j)) {
+              case 'a':
+                a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
+                A = a * a;
+                lastSetted = "a";
+                varName = getVarName("a");
+                varsForma.push(setVar("a", s+a));
+                value = a;
+                break;
+              case 'b':
+                ok = false;
+                while (!ok) {
+                  b = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
+                  B = b * b;
+                  ok = b <= a;
+                }
+                lastSetted = "b";
+                varName = getVarName("b");
+                varsForma.push(setVar("b", s+b));
+                value = b;
+                break;
 
-                
-                case 'A':
-                  expUser += ' '+A;
-                  expJS += ' '+A;
-                  lastSetted = "A";
-                  tokens.push(A);
-                  break;
-                case 'B':
-                  expUser += ' '+B;
-                  expJS += ' '+B;
-                  lastSetted = "B";
-                  tokens.push(B);
-                  break;
-                case'D':
-                  {
-                    let D = 2 * a * b;
-                    expUser += ' '+D;
-                    expJS += ' '+D;
-                    lastSetted = "D";
-                    tokens.push(D);
-                  }
-                  break;
-                case 's':
-                  {
-                    expUser += ' '+s;
-                    expJS += ' '+s;
-                    last = 's';
-                    tokens.push(s);
-                  }
-                  break;
-                case 'n': 
-                  {
-                    expUser += ' '+'-';
-                    expJS += '-';
-                    tokens.push('n');
-                  }
-                  break;
-                //não coloca esses chars
-                case '^': {
-                  let p = "";
-                  let con = 1;
-                  for (let k = j + 1; con; k++) {
-                    let ch = forma.charAt(k);
-                    if (ch >= '0' && ch <= '9') {
-                      p += ch;
-                    }
-                    else {
-                      j = k;
-                      con = 0;
-                      break;
-                    }
-                  }
+              case 'c': {
+                lastSetted = "c";
+                varName = getVarName("c");
+                varsForma.push(setVar("c", s+c));
+                value = c;
+              }
+              break;
 
-                  let valueBefore = null;
-                  switch(lastSetted) {
-                    case 'A':
-                      valueBefore = A;
-                      break;
-                    case 'B':
-                      valueBefore = B;
-                      break;
-                    case 'D':
-                      valueBefore = D;
-                      break;
-                    case 'a':
-                      valueBefore = a;
-                      break;
-                    case 'b':
-                      valueBefore = b;
-                      break;
-                    case 'c':
-                      valueBefore = c;
-                      break;
-                    default:
-                      valueBefore = null;
-                      break;
-                  }
+              case 't': {
+                lastSetted = "t";
+                varName = getVarName("t");
+                varsForma.push(setVar("t", s+t));
+                value = t;
+              }
+              break;
 
-                  if (valueBefore) {
-                    let hasParenteses = forma.charAt(j-1) === ')';
-                    let r = Math.pow(valueBefore, parseInt(p));
-                    console.log("valueBefore = '"+valueBefore+"'");
-                    console.log("p = '"+p+"'");
-                    expJS += ' '+s+r;
-                    expUser += ' '+s
-                    +(hasParenteses?'(':'')
-                    +valueBefore
-                    +(hasParenteses?')':'')+'^'+p;
-                  }
+              
+              case 'A':
+                lastSetted = "A";
+                varName = getVarName("A");
+                varsForma.push(setVar("A", s+A));
+                value = A;
+                break;
+              case 'B':
+                lastSetted = "B";
+                varName = getVarName("B");
+                varsForma.push(setVar("B", s+B));
+                value = B;
+                break;
+              case'D':
+                {
+                  let D = 2 * a * b;
+                  lastSetted = "D";
+                  varName = getVarName("D");
+                  varsForma.push(setVar("D", s+D));
+                  value = D;
                 }
                 break;
-                case 'p':
-                  expUser += '^2';
-                  tokens.push('^2');
-                  break;
-                case 'Q':{
-                    let a = RandInt(1,9);
-                    let b = RandInt(1,9);
-                    Q = a * b;
-                    if (RandInt(0,1))
-                      q = a;
-                    else
-                      q = b;
-                    B = Q;
-                    expUser += ' '+B;
-                    expJS += ' '+B;
-                    tokens.push(B);
-                  }
-                  break;
-                case 'q':{
-                    B = q;
-                    expUser += ' '+B;
-                    expJS += ' '+B;
-                    tokens.push(B);
-                  }
-                  break;
-                default:
-                  expUser += ' '+forma.charAt(j);
-                  expJS += ''+forma.charAt(j);
-                  tokens.push(forma.charAt(j));
-                  break;
-              }
+              case 's':
+                {
+                  s = sinal[RandInt(0, sinal.length - 1)];
+                }
+                break;
+              case 'Q':{
+                  let a = RandInt(1,9);
+                  let b = RandInt(1,9);
+                  Q = a * b;
+                  if (RandInt(0,1))
+                    q = a;
+                  else
+                    q = b;
+                  B = Q;
+                  varName = getVarName("Q");
+                  varsForma.push(setVar("Q", s+Q));
+                  value = Q;
+                }
+                break;
+              case 'q':{
+                  varName = getVarName("q");
+                  varsForma.push(setVar("q", s+q));
+                  value = q;
+                }
+                break;
+              default:
+                break;
             }
 
-          if (last !== 'e') {
-            console.log('['+total+'] expUser = '+last+' exp \''+expUser+'\'');
-            console.log('['+total+'] expJS = '+last+' exp \''+expJS+'\'');
+            //copia as formas pra string
+            if (forma.charAt(j) != 's') {
+              if (varName.length)
+                strForma += value;
+              else 
+                strForma += forma.charAt(j);
+            }
+            else {
+              strForma += s;
+            }
           }
 				}
+
+        expJS += strForma;
+        vars = [...vars, ...varsForma];
+        console.log("[expr]='"+expJS+"'");
+        console.log("["+forma+"]=['"+varsForma+"']")
 
         if (total != lastMonomio) {
           expUser += ' '+opLink;
           expJS += ''+opLink; 
         }
+        
       }
 
 			console.log('Gerador expressão Numérica notável = \'' + expJS + "'");
-      const resp = eval(expJS);
+      let varsArgs = "";
+      vars.forEach((element, index) => {
+        varsArgs += (index > 0?",":"") + element;
+      });
+      const resp = await runAST(expJS, varsArgs);
+      console.log("resp = "+resp);
 			if (resp !== 'undefined') {
 
-        this.expressionStr = expUser;
-        this.expressionStrJS = expJS;
-        this.answer = resp;
+        this.expressionStr = resp.userExpr;
+        this.expressionStrJS = resp.exprJS;
+        this.answer = resp.result;
 				//this.answer = this.generateAnswer({chosenFormas, answerMonomioBase})
-				return true;
+				if (this.answer - Math.floor(this.answer) === 0)
+          return true;
 			}
 		}
 
@@ -325,7 +303,7 @@ function showExprNResp ( index, strExpr, answer ) {
 	alert("Expressão N-"+index+': '+strExpr+', resposta = '+answer);
 }
 
-function gerarExpressaoZ ( form, targetId ) {
+async function gerarExpressaoZ ( form, targetId ) {
 	console.log("Aqui estamos gerarExpressaoZ");
 	let mult = [];
 	let div = [];
@@ -363,9 +341,13 @@ function gerarExpressaoZ ( form, targetId ) {
         qtdeOper["sum"] = RandInt(1, 3);
         oper['sum'] = 1;
       }
-      else if (el.id.indexOf('chosenExp') > -1) {
+      else if (el.id === ('chosenExp')) {
         qtdeOper["exp"] = true;
         oper["exp"] = true;
+      }
+      else if (el.id === ('chosenExpComParen')) {
+        qtdeOper["expComParen"] = true;
+        oper["expComParen"] = true;
       }
       else if (el.id.indexOf('chosenParen') > -1) {
         qtdeOper["paren"] = true;
@@ -390,15 +372,16 @@ function gerarExpressaoZ ( form, targetId ) {
 	let gerador = new GeradorExpressaoZ({oper, digitsTermA, digitsTermADiv, qtdeOper});
 	let strHtml = "";
 	for (let i = 0; i < qtdeExpressao; i++) {
-		if (!gerador.doExpression()) {
+    let ret = await gerador.doExpression()
+		if (!ret) {
 			console.log('Falha ao gerar expressão N i='+i, gerador);
 			continue;
 		}
 		//strHtml += '<p><strong>NOTA: Para a expressão, deixe '+(gerador.qtdeLinhas - 1)+' linhas no caderno abaixo da expressão</strong><br />';
 		strHtml += 'Expressão N-'+(i+1)+': '
-		+'<strong>'
+		+'<strong class="preserveSpaces"> '
 		+gerador.expressionStr
-		+'</strong>'
+		+' </strong>'
 		+'<br />'
 		+'<button type="button" onclick="showExprNResp('+(i+1)+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
 		+'Ver resposta Expressão N-'+(i+1)

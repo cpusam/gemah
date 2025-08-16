@@ -5,11 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Super Gerador de Expressão em Z</title>
   <link type="text/css" rel="stylesheet" href="../css/styles.css">
+  <script src="./js/geradorZ_lib.js"></script>
+  <script>
+  async function runAST(expr, vars) {
+    let result = "";
+    await geradorZ().then(Module => {
+      if (!expr.length || !vars.length)
+        return;
+      let paramsTeste = "geradorZ"+", "+"'a+2'"+","+"a=2";
+      let params = "geradorZ,"+"'"+expr+"',"+vars;
+      console.log("expr = '"+expr+"'");
+      let generatePEMDAS_geradorZ = Module.cwrap('generatePEMDAS_geradorZ', 'string', ['number', 'string']);
+      result = generatePEMDAS_geradorZ(3, (params));
+      console.log("result = '"+result+",");
+    });
+    return JSON.parse(result);
+  }
+  </script>
+  
 	<script src="./js/utils.js"></script>
 	<script src="./js/geradorExpressaoZ.js"></script>
 </head>
 <body>
-  <form id="geradorExpressaoZ" action="javascript:;" onsubmit="gerarExpressaoZ(this, 'contasExpressaoZ')">
+  <form id="geradorExpressaoZ" action="javascript:;" onsubmit="gerarExpressaoZ(this, 'contasExpressaoZ'); return false;">
 		<div>
 			<h1>Super Gerador de Expressões Z:</h1>
       <string>Escolha quais tipos de contas a expressão deve ter:</string>
@@ -33,6 +51,9 @@
       <br />
       <label for="chosenExp">com expoente
         <input id="chosenExp" type="checkbox" value="exp">
+      </label>
+      <label for="chosenExpComParen">com expoente mais difícil
+        <input id="chosenExpComParen" type="checkbox" value="expComParen">
       </label>
       <br />
       <label for="chosenParen">com parênteses
