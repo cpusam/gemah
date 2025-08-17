@@ -345,7 +345,6 @@ class GeradorExpressaoZ {
 
 				if (answer - Math.floor(answer) === 0) {
           if (chosenAssuntos.length >= maior || maior === -1) {
-
             maior = chosenAssuntos.length;
 
             this.expressionStr = resp.userExpr;
