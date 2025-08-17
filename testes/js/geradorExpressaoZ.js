@@ -41,56 +41,74 @@ class GeradorExpressaoZ {
     //NOTA: entre cada formato é escolhido um sinal s
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
-		const formatosBase = this.optionsTable.formatosBase || [
-      'a sb',
-		];
+		const formatosBase = {
+      sum:[],
+      sub:[],
+      mult:[],
+      div:[],
+      exp:[],
+      paren:[],
+      expComParen:[],
+      expNegComParen:[],
+    };
+    if (this.optionsTable.oper["sum"]) {
+      formatosBase.sub.push('a +b');
+    }
     if (this.optionsTable.oper["sub"]) {
-      formatosBase.splice(0, 1);
-      formatosBase.push('a -b');
+      formatosBase.sub.push('a -b');
     }
     if (this.optionsTable.oper["mult"]) {
-      formatosBase.push('a * (sb)');
-      formatosBase.push('a * (-b)');
+      formatosBase.mult.push('a * (sb)');
+      formatosBase.mult.push('a * b');
     }
     if (this.optionsTable.oper["div"]) {
-      formatosBase.push('Q / (sq)');
-      formatosBase.push('Q / (-q)');
+      formatosBase.div.push('Q / (sq)');
+      formatosBase.div.push('Q / (-q)');
     }
+    //NOTA:
+    //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
+    //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
     //expoente
     if (this.optionsTable.oper["exp"]) {
-      formatosBase.push('(c^(2))');
-      formatosBase.push('(c^(2)) + (-c)^2');
-      formatosBase.push('(-c)^3');
+      formatosBase.exp.push('(c^(2))');
+      formatosBase.exp.push('(c^(2)) + (-c)^2');
+      formatosBase.exp.push('(-c)^3');
     }
 
-    //expoente
+    //expoente com parenteses
     if (this.optionsTable.oper["expComParen"]) {
-      formatosBase.push('((sc)^(t))');
-      formatosBase.push('((sc)^(t))*(sa)');
-      formatosBase.push('((sc)^(t))*(sa)*(sQ/(sq))');
+      formatosBase.expComParen.push('((sc)^(t))');
+      formatosBase.expComParen.push('((sc)^(t))*(sa)');
+      formatosBase.expComParen.push('((sc)^(t))*(sa)*(sQ/(sq))');
+    }
+
+    if (this.optionsTable.oper["expNegComParen"]) {
+      formatosBase.expNegComParen.push('((sc)^(-t))');
+      formatosBase.expNegComParen.push('((sc)^(-t))*(sa)');
+      formatosBase.expNegComParen.push('((sc)^(-t))*(sa)*(sQ/(sq))');
     }
 
     //parênteses
     //fazer dividido por tópicos foi muito bom pra adicionar novas opções
     if (this.optionsTable.oper["paren"]) {
       //opção default é apenas soma
-      formatosBase.push('(+a +b)');
+      formatosBase.paren.push('(sa sb)');
       //subtração ou aleatórios
       if (this.optionsTable.oper['sub']) {
-        formatosBase.push('(sa sb)');
-        formatosBase.push('(sa sb sc)');
+        formatosBase.sub.push('(sa sb)');
+        formatosBase.sub.push('(sa sb sc)');
       }
       //opção de div
       if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
-        formatosBase.push('(sQ / (sq) sQ / (sq)) * (sc)');
-        formatosBase.push('(sc) * (sQ / (sq) sQ / (sq))');
+        formatosBase.paren.push('(sQ / (sq) sQ / (sq)) * (sc)');
+        formatosBase.paren.push('(sc) * (sQ / (sq) sQ / (sq))');
       }
       else if (this.optionsTable.oper['mult']) {
-        formatosBase.push('(sa sb sc) * (sa)');
-        formatosBase.push('(sa sb s(sa sb)) * (sc)');
+        formatosBase.mult.push('(sa sb sc) * (sa)');
+        formatosBase.mult.push('(sa sb s(sa sb)) * (sc)');
       } 
       else if (this.optionsTable.oper['div']) {
-        formatosBase.push('(sQ / (sq) + sQ / (sq))');
+        formatosBase.div.push('(sQ / (sq) + sQ / (sq))');
       }
     }
 
@@ -98,7 +116,14 @@ class GeradorExpressaoZ {
       'a + b',
 		];
 
-		let formatos = formatosBase;//this.optionsTable.withParenteses? formatosBase: formatoSemParenteses;
+		let formatos = [];
+    for (let el in this.optionsTable.oper)
+      formatos.push(el);
+    if (formatos.length === 0) {
+      alert("formatos nulo!");
+      return false;
+    }
+      
 
     const sinal = ['-', '+'];
     const sinalLink = ['-','+'];		
@@ -113,10 +138,22 @@ class GeradorExpressaoZ {
 
 			let chosenFormas = [];
       const maxMonomio = this.optionsTable.qtdeMonomio;// RandInt(2, this.optionsTable.qtdeMonomio);
+      let chosenAssuntos = [];
 			for (let total = 0, lastMonomio = maxMonomio - 1; total < maxMonomio; total++) {
         varsCount++;
         //escolhe a forma
-				let forma = formatos[RandInt(0, formatos.length - 1)];
+        let member = formatos[RandInt(0, formatos.length - 1)];
+				let forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
+        if (chosenAssuntos.indexOf(member) > -1) {
+          let tries = 0;
+          do {
+            member = formatos[RandInt(0, formatos.length - 1)];
+				    forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
+            tries++;
+          } while (tries < 100 && chosenAssuntos.indexOf(member) > -1);
+          chosenAssuntos.push(member);
+        }
+
         chosenFormas.push(forma);
         let last = '';
         let opLink = sinalLink[RandInt(0, sinalLink.length - 1)];
@@ -274,7 +311,6 @@ class GeradorExpressaoZ {
           expUser += ' '+opLink;
           expJS += ''+opLink; 
         }
-        
       }
 
 			console.log('Gerador expressão Numérica notável = \'' + expJS + "'");
