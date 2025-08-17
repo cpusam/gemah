@@ -157,6 +157,9 @@ class GeradorExpressaoZ {
         chosenFormas.push(forma);
         let last = '';
         let opLink = sinalLink[RandInt(0, sinalLink.length - 1)];
+        if (formatos.length === 1 && formatos[0] === "sum") {
+          opLink = "+";
+        }
         
         console.log('formato escolhido = '+forma);
         let a = 0;
@@ -263,6 +266,9 @@ class GeradorExpressaoZ {
               case 's':
                 {
                   s = sinal[RandInt(0, sinal.length - 1)];
+                  if (formatos.length === 1 && formatos[0] === "sum") {
+                    s = "+";
+                  }
                 }
                 break;
               case 'Q':{
