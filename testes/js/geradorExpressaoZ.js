@@ -49,7 +49,7 @@ class GeradorExpressaoZ {
       exp:[],
       paren:[],
       expComParen:[],
-      expNegComParen:[],
+      //expNegComParen:[],
     };
     if (this.optionsTable.oper["sum"]) {
       formatosBase.sum.push('a +b');
@@ -117,20 +117,24 @@ class GeradorExpressaoZ {
 		];
 
 		let formatos = [];
-    for (let el in this.optionsTable.oper)
-      formatos.push(el);
+    for (let el in formatosBase)
+      if (formatosBase[el].length)
+        formatos.push(el);
+    
     if (formatos.length === 0) {
       alert("formatos nulo!");
       return false;
     }
-      
+    console.log("formatos = '"+formatos);
 
     const sinal = ['-', '+'];
     const sinalLink = ['-','+'];		
 		let valid = 0;
 
     console.log(this.optionsTable.qtdeMonomio);
-		for (let t = 0; t < 100; ) {
+    let maior = -1;
+    let maiorResp = {};
+		for (let ts = 0; ; ) {
 			let expUser = '';//expressão para o usuário
       let expJS = '';//expressão para o javascript calcular
 			let vars = [];
@@ -153,10 +157,10 @@ class GeradorExpressaoZ {
           } while (tries < 100 && chosenAssuntos.indexOf(member) > -1);
           if (tries >= 100)
             continue;
-          chosenAssuntos.push(member);
         }
-
+        chosenAssuntos.push(member);
         chosenFormas.push(forma);
+
         let last = '';
         let opLink = sinalLink[RandInt(0, sinalLink.length - 1)];
         if (formatos.length === 1 && formatos[0] === "sum") {
@@ -320,25 +324,37 @@ class GeradorExpressaoZ {
           expJS += ''+opLink; 
         }
 
-        if (chosenAssuntos.length === formatos.length) {
+        if (formatos.length > 1 && chosenAssuntos.length === formatos.length) {
           break;
         }
       }
 
 			console.log('Gerador expressão Numérica notável = \'' + expJS + "'");
+      console.log("chosenAssuntos "+chosenAssuntos);
+      
       let varsArgs = "";
       vars.forEach((element, index) => {
         varsArgs += (index > 0?",":"") + element;
       });
       const resp = await runAST(expJS, varsArgs);
       console.log("resp = "+resp);
-			if (resp !== 'undefined') {      
-        this.expressionStr = resp.userExpr;
-        this.expressionStrJS = resp.exprJS;
-        this.answer = parseFloat(resp.result);
-				//this.answer = this.generateAnswer({chosenFormas, answerMonomioBase})
-				if (this.answer - Math.floor(this.answer) === 0)
-          return true;
+			if (resp !== 'undefined') {
+        ts++;
+				
+        let answer = parseFloat(resp.result);
+
+				if (answer - Math.floor(answer) === 0) {
+          if (chosenAssuntos.length >= maior || maior === -1) {
+
+            maior = chosenAssuntos.length;
+
+            this.expressionStr = resp.userExpr;
+            this.expressionStrJS = resp.exprJS;
+            this.answer = answer;
+            if (ts > 10)
+              return true;
+          }
+        }
 			}
 		}
 
