@@ -19,7 +19,10 @@
       result = generatePEMDAS_geradorZ(3, (params));
       console.log("result = '"+result+",");
     });
-    return JSON.parse(result);
+    let ret = JSON.parse(result);
+    if (!ret)
+      return undefined;
+    return ret;
   }
   </script>
   

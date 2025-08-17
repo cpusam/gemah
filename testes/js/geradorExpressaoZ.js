@@ -71,8 +71,8 @@ class GeradorExpressaoZ {
     //expoente
     if (this.optionsTable.oper["exp"]) {
       formatosBase.exp.push('(c^(2))');
-      formatosBase.exp.push('(c^(2)) + (-c)^2');
-      formatosBase.exp.push('(-c)^3');
+      formatosBase.exp.push('(c^(t)) + (-c)^(t)');
+      formatosBase.exp.push('(-c)^(2)');
     }
 
     //expoente com parenteses
@@ -95,8 +95,8 @@ class GeradorExpressaoZ {
       formatosBase.paren.push('(sa sb)');
       //subtração ou aleatórios
       if (this.optionsTable.oper['sub']) {
-        formatosBase.sub.push('(sa sb)');
-        formatosBase.sub.push('(sa sb sc)');
+        formatosBase.paren.push('(sa sb)');
+        formatosBase.paren.push('(sa sb sc)');
       }
       //opção de div
       if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
@@ -104,11 +104,11 @@ class GeradorExpressaoZ {
         formatosBase.paren.push('(sc) * (sQ / (sq) sQ / (sq))');
       }
       else if (this.optionsTable.oper['mult']) {
-        formatosBase.mult.push('(sa sb sc) * (sa)');
-        formatosBase.mult.push('(sa sb s(sa sb)) * (sc)');
+        formatosBase.paren.push('(sa sb sc) * (sa)');
+        formatosBase.paren.push('(sa sb s(sa sb)) * (sc)');
       } 
       else if (this.optionsTable.oper['div']) {
-        formatosBase.div.push('(sQ / (sq) + sQ / (sq))');
+        formatosBase.paren.push('(sQ / (sq) + sQ / (sq))');
       }
     }
 
@@ -130,7 +130,7 @@ class GeradorExpressaoZ {
 		let valid = 0;
 
     console.log(this.optionsTable.qtdeMonomio);
-		for (let t = 0; t < 100; t++) {
+		for (let t = 0; t < 100; ) {
 			let expUser = '';//expressão para o usuário
       let expJS = '';//expressão para o javascript calcular
 			let vars = [];
@@ -144,13 +144,15 @@ class GeradorExpressaoZ {
         //escolhe a forma
         let member = formatos[RandInt(0, formatos.length - 1)];
 				let forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
-        if (chosenAssuntos.indexOf(member) > -1) {
+        if (formatos.length > 1 && chosenAssuntos.indexOf(member) > -1) {
           let tries = 0;
           do {
             member = formatos[RandInt(0, formatos.length - 1)];
 				    forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
             tries++;
           } while (tries < 100 && chosenAssuntos.indexOf(member) > -1);
+          if (tries >= 100)
+            continue;
           chosenAssuntos.push(member);
         }
 
@@ -317,6 +319,10 @@ class GeradorExpressaoZ {
           expUser += ' '+opLink;
           expJS += ''+opLink; 
         }
+
+        if (chosenAssuntos.length === formatos.length) {
+          break;
+        }
       }
 
 			console.log('Gerador expressão Numérica notável = \'' + expJS + "'");
@@ -326,11 +332,10 @@ class GeradorExpressaoZ {
       });
       const resp = await runAST(expJS, varsArgs);
       console.log("resp = "+resp);
-			if (resp !== 'undefined') {
-
+			if (resp !== 'undefined') {      
         this.expressionStr = resp.userExpr;
         this.expressionStrJS = resp.exprJS;
-        this.answer = resp.result;
+        this.answer = parseFloat(resp.result);
 				//this.answer = this.generateAnswer({chosenFormas, answerMonomioBase})
 				if (this.answer - Math.floor(this.answer) === 0)
           return true;
@@ -414,11 +419,14 @@ async function gerarExpressaoZ ( form, targetId ) {
 	let gerador = new GeradorExpressaoZ({oper, digitsTermA, digitsTermADiv, qtdeOper});
 	let strHtml = "";
 	for (let i = 0; i < qtdeExpressao; i++) {
-    let ret = await gerador.doExpression()
-		if (!ret) {
-			console.log('Falha ao gerar expressão N i='+i, gerador);
-			continue;
-		}
+    let ret = false;
+    do {
+      ret = await gerador.doExpression()
+      if (!ret) {
+        console.log('Falha ao gerar expressão N i='+i, gerador);
+        continue;
+      }
+    } while (!ret);
 		//strHtml += '<p><strong>NOTA: Para a expressão, deixe '+(gerador.qtdeLinhas - 1)+' linhas no caderno abaixo da expressão</strong><br />';
 		strHtml += 'Expressão N-'+(i+1)+': '
 		+'<strong class="preserveSpaces"> '
