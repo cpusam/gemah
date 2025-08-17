@@ -52,7 +52,7 @@ class GeradorExpressaoZ {
       expNegComParen:[],
     };
     if (this.optionsTable.oper["sum"]) {
-      formatosBase.sub.push('a +b');
+      formatosBase.sum.push('a +b');
     }
     if (this.optionsTable.oper["sub"]) {
       formatosBase.sub.push('a -b');
