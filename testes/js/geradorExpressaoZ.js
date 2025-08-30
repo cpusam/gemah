@@ -10,7 +10,7 @@ class GeradorExpressaoZ {
 		this.optionsTable = optionsTable;
     this.optionsTable.minNumber = 0;
     this.optionsTable.maxNumber = 20;
-    this.optionsTable.qtdeMonomio = 5;
+    this.optionsTable.qtdeMonomio = 7;
 		this.expressionStr = "";
 		console.log(optionsTable.maxPotency, optionsTable.maxNumber, optionsTable.maxLiteral, optionsTable.qtdeMonomio);
 	}
@@ -54,11 +54,27 @@ class GeradorExpressaoZ {
       expComParen:[],
       expNegComParen:[],
     };
-    if (this.optionsTable.oper["sum"]) {
-      formatosBase.sum.push('a +b');
+    
+    if (this.optionsTable.oper["expComParen"]) {
+      let cel = 0;
+      this.optionsTable.oper["paren"] = true;
+      for (let e in this.optionsTable.oper)
+        cel += (e == "sum" || e === "sub" || e === "div" || e === "exp" || e === "expComParen" || e === "expNegComParen" || e === "paren");
+      if (cel <= 2) {
+        alert("Escolha mais de dois assuntos! Escolhido "+cel);
+        throw "Escolhido menos de 2 assuntos";
+      }
     }
+      
+    
+    //da sum
+    formatosBase.sum.push('a +b');
+    formatosBase.sum.push('a sb');
+
     if (this.optionsTable.oper["sub"]) {
       formatosBase.sub.push('a -b');
+      formatosBase.sub.push('b');
+      formatosBase.sub.push('a');
     }
     if (this.optionsTable.oper["mult"]) {
       formatosBase.mult.push('a * (sb)');
@@ -146,23 +162,15 @@ class GeradorExpressaoZ {
 			let chosenFormas = [];
       const maxMonomio = this.optionsTable.qtdeMonomio;// RandInt(2, this.optionsTable.qtdeMonomio);
       let chosenAssuntos = [];
-			for (let total = 0, lastMonomio = maxMonomio - 1; total < maxMonomio; total++) {
+			for (let total = 0, lastMonomio = maxMonomio - 1; total < maxMonomio; ) {
         varsCount++;
         //escolhe a forma
         let member = formatos[RandInt(0, formatos.length - 1)];
 				let forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
-        if (formatos.length > 1 && chosenAssuntos.indexOf(member) > -1) {
-          let tries = 0;
-          do {
-            member = formatos[RandInt(0, formatos.length - 1)];
-				    forma = formatosBase[member][RandInt(0, formatosBase[member].length - 1)];
-            tries++;
-          } while (tries < 100 && chosenAssuntos.indexOf(member) > -1);
-          if (tries >= 100)
-            continue;
-        }
-        chosenAssuntos.push(member);
-        chosenFormas.push(forma);
+        if (chosenAssuntos.indexOf(member) === -1)
+          chosenAssuntos.push(member);
+        if (chosenFormas.indexOf(forma) === -1)
+          chosenFormas.push(forma);
 
         let last = '';
         let opLink = sinalLink[RandInt(0, sinalLink.length - 1)];
@@ -319,13 +327,19 @@ class GeradorExpressaoZ {
 
         expJS += strForma;
         vars = [...vars, ...varsForma];
-        console.log("[expr]='"+expJS+"'");
-        console.log("["+forma+"]=['"+varsForma+"']")
 
-        if (total != lastMonomio) {
+        if (total < lastMonomio) {
           expUser += ' '+opLink;
           expJS += ''+opLink; 
         }
+        else {
+          break;
+        }
+
+        total++;
+
+        console.log("[expr]='"+expJS+"'");
+        console.log("["+forma+"]=['"+varsForma+"']")
       }
 
 			console.log('Gerador expressão Numérica notável = \'' + expJS + "'");
@@ -337,7 +351,7 @@ class GeradorExpressaoZ {
       });
       const resp = await runAST(expJS, varsArgs);
       console.log("resp = "+resp);
-			if (resp !== 'undefined') {
+			if (resp !== undefined) {
         ts++;
 				
         let answer = parseFloat(resp.result);
