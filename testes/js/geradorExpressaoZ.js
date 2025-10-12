@@ -4,7 +4,7 @@
 class GeradorExpressaoZ {
   /**
 	 * 
-	 * @param {{withParenteses:boolean, maxPotency:number, minNumber:number, maxNumber:number, maxLiteral:number, qtdeMonomio:number, oper:object}} optionsTable 
+	 * @param {{makeTestePEMDAS:boolean,withParenteses:boolean, maxPotency:number, minNumber:number, maxNumber:number, maxLiteral:number, qtdeMonomio:number, oper:object}} optionsTable 
 	 */
 	constructor (optionsTable) {
 		this.optionsTable = optionsTable;
@@ -12,6 +12,8 @@ class GeradorExpressaoZ {
     this.optionsTable.maxNumber = 20;
     this.optionsTable.qtdeMonomio = 7;
 		this.expressionStr = "";
+    this.makeTestePEMDAS = optionsTable.makeTestePEMDAS || false;
+    this.testePEMDAS = {};
 		console.log(optionsTable.maxPotency, optionsTable.maxNumber, optionsTable.maxLiteral, optionsTable.qtdeMonomio);
 	}
 
@@ -363,6 +365,8 @@ class GeradorExpressaoZ {
             this.expressionStr = resp.userExpr;
             this.expressionStrJS = resp.exprJS;
             this.answer = answer;
+            if (this.makeTestePEMDAS)
+              this.testePEMDAS = await createTestePEMDAS(expJS, varsArgs);
             if (ts > 10)
               return true;
           }
@@ -372,6 +376,50 @@ class GeradorExpressaoZ {
 
 		return false;
 	}
+}
+
+let clicksData = {
+};
+function onClickAnswer(answerEl, idEl, correctIndex, indexEl) {
+  if (clicksData[idEl].currentClick >= clicksData[idEl].total) {
+    return;
+  }
+
+  //apaga todas as outras classes porque só tem que ficar uma só.
+  if ((answerEl.classList.contains('correctState') || answerEl.classList.contains('wrongState')) === false) {
+    answerEl.classList.remove(...answerEl.classList);
+  }
+
+  if (correctIndex === clicksData[idEl].currentClick) {
+    if (clicksData[idEl].elementosClicados.indexOf(answerEl) === -1) {
+      clicksData[idEl].elementosClicados.push(answerEl);
+      clicksData[idEl].currentClick++;
+      clicksData[idEl].resultado.totalClicks++;
+      clicksData[idEl].resultado.clicksCertos++;
+    }
+
+    if (!answerEl.classList.contains('correctState'))
+      answerEl.classList.add('correctState');
+    if (answerEl.classList.contains('wrongState'))
+      answerEl.classList.remove('wrongState');
+    
+  }
+  else {
+    if (clicksData[idEl].elementosClicados.indexOf(answerEl) === -1) {
+      clicksData[idEl].resultado.totalClicks++;
+      clicksData[idEl].resultado.clicksErrados++;
+    }
+    if (answerEl.classList.contains('correctState'))
+      answerEl.classList.remove('correctState');
+    if (!answerEl.classList.contains('wrongState'))
+      answerEl.classList.add('wrongState');
+  }
+
+  let resultado = document.getElementById("expressaoResultado"+indexEl);
+  if (!resultado)
+    return;
+  resultado.textContent = 'Acertos: '+(clicksData[idEl].resultado.clicksCertos)
+                          +' Erros: '+(clicksData[idEl].resultado.clicksErrados);
 }
 
 function showExprNResp ( index, strExpr, answer ) {
@@ -397,6 +445,7 @@ async function gerarExpressaoZ ( form, targetId ) {
 	let qtdeExpressao = 10;
 	let qtdeOper = {};
   let terms = 0;
+  let makeTestePEMDAS = false;
   for (let el of form.elements) {
     if (el.type === 'checkbox' && el.checked) {
       terms = 1;
@@ -432,6 +481,10 @@ async function gerarExpressaoZ ( form, targetId ) {
     else if (el.id.indexOf('qtdeExpressao') > -1) {
       qtdeExpressao = parseInt(el.value);
     }
+    else if (el.id.indexOf('makeTestePEMDAS') > -1) {
+      makeTestePEMDAS = true;
+      console.log("makeTestePEMDAS mode!");
+    }
   }
 
   if (qtdeExpressao <= 0) {
@@ -444,7 +497,9 @@ async function gerarExpressaoZ ( form, targetId ) {
     return;
   }
 
-	let gerador = new GeradorExpressaoZ({oper, digitsTermA, digitsTermADiv, qtdeOper});
+  //reseta
+  clicksData = {};
+	let gerador = new GeradorExpressaoZ({makeTestePEMDAS, oper, digitsTermA, digitsTermADiv, qtdeOper});
 	let strHtml = "";
 	for (let i = 0; i < qtdeExpressao; i++) {
     let ret = false;
@@ -455,15 +510,57 @@ async function gerarExpressaoZ ( form, targetId ) {
         continue;
       }
     } while (!ret);
-		//strHtml += '<p><strong>NOTA: Para a expressão, deixe '+(gerador.qtdeLinhas - 1)+' linhas no caderno abaixo da expressão</strong><br />';
-		strHtml += 'Expressão N-'+(i+1)+': '
-		+'<strong class="preserveSpaces"> '
-		+gerador.expressionStr
-		+' </strong>'
-		+'<br />'
-		+'<button type="button" onclick="showExprNResp('+(i+1)+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
-		+'Ver resposta Expressão N-'+(i+1)
-		+'</button><br /></p>';
+    strHtml += '<div id="expressao'+(i+1)+'">'
+    if (makeTestePEMDAS) {
+      strHtml += 'Expressão N-'+(i+1)+': '
+      +'<strong class="preserveSpaces"> '
+      +gerador.expressionStr
+      +' </strong>'
+      +'<br />';
+      
+      strHtml += '<span style="color:red;">Clique em cada opção de acordo com a ordem de resolução no PEMDAS</span>';
+      strHtml += '<br/>';
+
+      for (let j = 0; j < gerador.testePEMDAS.steps.length; j++) {
+        let correctIndex = parseInt(gerador.testePEMDAS.steps[j].index);
+        {
+          clicksData['expressao'+(i+1)] = {
+            currentClick:0, total: gerador.testePEMDAS.steps.length,
+            elementosClicados: [],
+            resultado: {
+              totalClicks: 0,
+              clicksCertos: 0,
+              clicksErrados: 0,
+            }
+          };
+        }
+        
+        strHtml += '<div class="'+((j % 2 === 0)?"indexParNaoSelecionadoState": "indexImparNaoSelecionadoState")
+        +'" height="40" id=`expressao'+(i+1)+'_step'+(j)
+        +'` onclick="onClickAnswer(this, `expressao'+(i+1)
+        +'`, '+correctIndex+', '+(i+1)+')">';
+        strHtml += '<span>';
+          strHtml += gerador.testePEMDAS.steps[j].text;
+        strHtml += '</span>';
+        strHtml += '</div>';
+      }
+      strHtml += '<div class="resultadoPEMDAS" id="expressaoResultado'+(i+1)+'">';
+        strHtml += 'Acertos: 0 Erros: 0';
+      strHtml += '</div>';
+		  strHtml += '<br />';
+    }
+    else {
+      //strHtml += '<p><strong>NOTA: Para a expressão, deixe '+(gerador.qtdeLinhas - 1)+' linhas no caderno abaixo da expressão</strong><br />';
+      strHtml += 'Expressão N-'+(i+1)+': '
+      +'<strong class="preserveSpaces"> '
+      +gerador.expressionStr
+      +' </strong>'
+      +'<br />'
+      +'<button type="button" onclick="showExprNResp('+(i+1)+',`'+gerador.expressionStr+'`,'+gerador.answer+');">'
+      +'Ver resposta Expressão N-'+(i+1)
+      +'</button><br /></p>';
+    }
+    strHtml += '</div><br/>';
 	}
 	
 	

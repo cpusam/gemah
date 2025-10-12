@@ -180,3 +180,113 @@ function marcarCheckbox ( formId, checked, termB ) {
 			el.checked = checked;
 	}
 }
+
+
+/**
+ * 
+ * @param {{operacao:["mult","div","add","sub"], minA:number, maxA:number, minB:number, maxB:number}} options 
+ * @returns {object} se não criar retorna undefined, object se criar
+ * @notes
+ *  --minA e maxA são a quantidade minima/máxima de digitos no termo A
+ */
+function gerarContaTabuada(options) {
+  let operacao = options.operacao;
+
+  let termB = "";
+  //pro gabriel eu mudo os valores por operação
+  if (operacao === "mult") {
+    do {
+      termB = makeMultTerm(0, 9, RandInt(options.minB, options.maxB));
+    } while (termB.length < minB);
+    lengthA = options.maxA;
+  }
+  else if (operacao == "div") {
+    do {
+      termB = makeMultTerm(0, 9, RandInt(options.minB, options.maxB));
+    } while (termB.length < options.minB);
+    lengthA = options.maxA;
+  }
+  else if (operacao == "sub") {
+    do {
+      termB = makeMultTerm(0, 9, RandInt(options.minB, options.maxB));
+    } while (termB.length < minB);
+    lengthA = options.maxA;
+  }
+  else if (operacao == "add") {
+    do {
+      termB = makeMultTerm(0, 9, RandInt(options.minB, options.maxB));
+    } while (termB.length < minB);
+    lengthA = options.maxA;
+  }
+  let k = 0;
+  //remove os zeros a esquerda
+  while (termB.length > 1 && termB[k] == 0 && k++) ;
+  termB = termB.slice(k, termB.length);
+
+  let termA = makeMultTerm(0, 9, RandInt(optionss.minA, lengthA));
+  
+  let A = termA;
+  k = 0;
+  //remove os zeros a esquerda
+  while (A.length > 1 && A[k] == 0 && k++) ;
+    A = A.slice(k, A.length);
+  
+  termA = A;
+
+  let conta = "";
+  let result = "nulo";
+  let oper = "";
+  if (operacao === "add" || operacao == "sub") {
+  
+    oper = operacao == "add"? "+": "-";
+
+    let a = parseInt(A);
+
+    termB = makeMultTerm(0, 9, RandInt(2, termA.length));
+    
+    k = 0;
+    //remove os zeros a esquerda
+    while (termB.length > 1 && termB[k] == 0 && k++) ;
+      termB = termB.slice(k, termB.length);
+    
+    let b = parseInt(termB);
+    if (a < b || a <= 0) {
+      return undefined;
+    }
+
+    result = oper === "+"? a + b: a - b;
+    conta = oper === "+"? String(a) + " + " + String(b): String(a) + " - " + String(b);
+  }
+  else if (operacao === "mult") {
+    oper = "x";
+    result = parseInt(A) * parseInt(termB);
+    conta = String(a) + " " + oper + " "+ String(b);
+  }
+  else if (operacao === "div") {
+    oper = "/";
+    conta = String(a) + " " + oper +" "+ String(b);
+    result = Math.floor(parseInt(A) / parseInt(termB));
+    let r = Math.fmod(parseInt(A), parseInt(termB));
+    if (r > 0) {
+      result = "`"+result +' x '+ parseInt(termB)+" + "+r+"`";
+    }
+    else {
+      result = "`"+result+"`";
+    }
+  }
+  else {
+    console.log("gerarContas::Operacao "+operacao+" não identificada");
+    return undefined;
+  }
+
+  let obj = {
+    termA: String(A),
+    termB: String(termB),
+    resultado: String(result),
+    conta: String(conta),
+    operacao: String(oper),
+    operacaoName: String(operacao),
+  };
+
+  return obj;
+}

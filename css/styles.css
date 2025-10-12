@@ -241,3 +241,32 @@ Teste vertical
   text-align: center;
   z-index: 0;
 }
+
+.wrongState {
+  background-color: rgb(255,0,0);
+  color: white;
+  font-style: italic;
+}
+
+.correctState {
+  background-color: rgb(0,255,0);
+  color: black;
+  font-weight: bold;
+}
+
+.indexParNaoSelecionadoState {
+  background-color: rgb(118, 134, 118);
+  color: black;
+  font-weight: bold;
+}
+
+.indexImparNaoSelecionadoState {
+  background-color: rgb(121, 124, 121);
+  color: black;
+  font-weight: bold;
+}
+
+.resultadoPEMDAS {
+  background-color: gray;
+  color: black;
+}

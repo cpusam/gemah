@@ -47,7 +47,7 @@ function geradorDivisaoN (form, tabuadaDiv) {
 	for (let i = 0; i < qtdeContas; i++) {
 		const divisor = Math.floor(Math.random() * optionsTable.maxDivisor) + optionsTable.minDivisor;
 		const dividendo = Math.floor(Math.random() * optionsTable.maxDividendo) + optionsTable.minDividendo;
-		const resultado = dividendo / divisor;
+		const resultado = String(Math.floor(dividendo / divisor)) + ' com resto ' + String(dividendo % divisor);
 
 		strHtml += '<label>'
 		+'Conta N-'+i+'</label>: '
@@ -55,7 +55,7 @@ function geradorDivisaoN (form, tabuadaDiv) {
 		+dividendo + ' / ' + divisor + ' = '
 		+'</span></strong>'
 		+'<button type="button" onclick="alert(`'
-		+dividendo + ' / ' + divisor + ' = '+resultado+'`);">'
+		+dividendo + ' / ' + divisor + ' deu resultado '+resultado+'`);">'
 		+'Ver reposta</button>'
 		+'<br />';
 	}
