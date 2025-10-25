@@ -4,7 +4,7 @@
 class GeradorExpressaoZ {
   /**
 	 * 
-	 * @param {{makeTestePEMDAS:boolean,withParenteses:boolean, maxPotency:number, minNumber:number, maxNumber:number, maxLiteral:number, qtdeMonomio:number, oper:object}} optionsTable 
+	 * @param {{makeTestePEMDAS:boolean,withParenteses:boolean, maxPotency:number, minNumber:number, maxNumber:number, maxLiteral:number, qtdeMonomio:number, oper:object, difficult:string}} optionsTable 
 	 */
 	constructor (optionsTable) {
 		this.optionsTable = optionsTable;
@@ -14,6 +14,7 @@ class GeradorExpressaoZ {
 		this.expressionStr = "";
     this.makeTestePEMDAS = optionsTable.makeTestePEMDAS || false;
     this.testePEMDAS = {};
+    this.difficult = optionsTable.difficult || "medium";
 		console.log(optionsTable.maxPotency, optionsTable.maxNumber, optionsTable.maxLiteral, optionsTable.qtdeMonomio);
 	}
 
@@ -37,9 +38,11 @@ class GeradorExpressaoZ {
 		//p = potência de 2
 		//r = raiz quadrada de q
     //i = iniciar tudo para a expressão seguinte, tipo resetar valores para usar nos próximos tokenbs do formato
-    //Q = dividendo tabuada de vididir
+    //Q = dividendo tabuada de dididir
     //q = divisor de 'q' tabuada de dividir 
     //t = numero de 0 até 5
+    //Y = dividendo usando até no máximo valor 30
+    //x = divisor usando até no máximo valor 5
     //NOTA: entre cada formato é escolhido um sinal s
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
@@ -68,68 +71,129 @@ class GeradorExpressaoZ {
       }
     }
       
-    
-    //da sum
-    formatosBase.sum.push('a +b');
-    formatosBase.sum.push('a sb');
+    if (this.difficult === "hard" || this.difficult === "medium") {
+      //da sum
+      formatosBase.sum.push('a +b');
+      formatosBase.sum.push('a sb');
 
-    if (this.optionsTable.oper["sub"]) {
-      formatosBase.sub.push('a -b');
-      formatosBase.sub.push('b');
-      formatosBase.sub.push('a');
-    }
-    if (this.optionsTable.oper["mult"]) {
-      formatosBase.mult.push('a * (sb)');
-      formatosBase.mult.push('a * b');
-    }
-    if (this.optionsTable.oper["div"]) {
-      formatosBase.div.push('Q / (sq)');
-      formatosBase.div.push('Q / (-q)');
-    }
-    //NOTA:
-    //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
-    //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
-    //expoente
-    if (this.optionsTable.oper["exp"]) {
-      formatosBase.exp.push('(c^(2))');
-      formatosBase.exp.push('(c^(t)) + (-c)^(t)');
-      formatosBase.exp.push('(-c)^(2)');
-    }
-
-    //expoente com parenteses
-    if (this.optionsTable.oper["expComParen"]) {
-      formatosBase.expComParen.push('((sc)^(t))');
-      formatosBase.expComParen.push('((sc)^(t))*(sa)');
-      formatosBase.expComParen.push('((sc)^(t))*(sa)*(sQ/(sq))');
-    }
-
-    if (this.optionsTable.oper["expNegComParen"]) {
-      formatosBase.expNegComParen.push('((sc)^(-t))');
-      formatosBase.expNegComParen.push('((sc)^(-t))*(sa)');
-      formatosBase.expNegComParen.push('((sc)^(-t))*(sa)*(sQ/(sq))');
-    }
-
-    //parênteses
-    //fazer dividido por tópicos foi muito bom pra adicionar novas opções
-    if (this.optionsTable.oper["paren"]) {
-      //opção default é apenas soma
-      formatosBase.parenA.push('(sa sb)');
-      //subtração ou aleatórios
-      if (this.optionsTable.oper['sub']) {
-        formatosBase.parenB.push('(sa sb)');
-        formatosBase.parenB.push('(sa sb sc)');
+      if (this.optionsTable.oper["sub"]) {
+        formatosBase.sub.push('a -b');
+        formatosBase.sub.push('b');
+        formatosBase.sub.push('a');
       }
-      //opção de div
-      if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
-        formatosBase.parenC.push('(sQ / (sq) sQ / (sq)) * (sc)');
-        formatosBase.parenC.push('(sc) * (sQ / (sq) sQ / (sq))');
+      if (this.optionsTable.oper["mult"]) {
+        formatosBase.mult.push('a * (sb)');
+        formatosBase.mult.push('a * b');
       }
-      else if (this.optionsTable.oper['mult']) {
-        formatosBase.parenD.push('(sa sb sc) * (sa)');
-        formatosBase.parenD.push('(sa sb s(sa sb)) * (sc)');
-      } 
-      else if (this.optionsTable.oper['div']) {
-        formatosBase.parenD.push('(sQ / (sq) + sQ / (sq))');
+      if (this.optionsTable.oper["div"]) {
+        formatosBase.div.push('Q / (sq)');
+        formatosBase.div.push('Q / (-q)');
+      }
+      //NOTA:
+      //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
+      //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
+      //expoente
+      if (this.optionsTable.oper["exp"]) {
+        formatosBase.exp.push('(c^(2))');
+        formatosBase.exp.push('(c^(t)) + (-c)^(t)');
+        formatosBase.exp.push('(-c)^(2)');
+      }
+
+      //expoente com parenteses
+      if (this.optionsTable.oper["expComParen"]) {
+        formatosBase.expComParen.push('((sc)^(t))');
+        formatosBase.expComParen.push('((sc)^(t))*(sa)');
+        formatosBase.expComParen.push('((sc)^(t))*(sa)*(sQ/(sq))');
+      }
+
+      if (this.optionsTable.oper["expNegComParen"]) {
+        formatosBase.expNegComParen.push('((sc)^(-t))');
+        formatosBase.expNegComParen.push('((sc)^(-t))*(sa)');
+        formatosBase.expNegComParen.push('((sc)^(-t))*(sa)*(sQ/(sq))');
+      }
+
+      //parênteses
+      //fazer dividido por tópicos foi muito bom pra adicionar novas opções
+      if (this.optionsTable.oper["paren"]) {
+        //opção default é apenas soma
+        formatosBase.parenA.push('(sa sb)');
+        //subtração ou aleatórios
+        if (this.optionsTable.oper['sub']) {
+          formatosBase.parenB.push('(sa sb)');
+          formatosBase.parenB.push('(sa sb sc)');
+        }
+        //opção de div
+        if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
+          formatosBase.parenC.push('(sQ / (sq) sQ / (sq)) * (sc)');
+          formatosBase.parenC.push('(sc) * (sQ / (sq) sQ / (sq))');
+        }
+        else if (this.optionsTable.oper['mult']) {
+          formatosBase.parenD.push('(sa sb sc) * (sa)');
+          formatosBase.parenD.push('(sa sb s(sa sb)) * (sc)');
+        } 
+        else if (this.optionsTable.oper['div']) {
+          formatosBase.parenD.push('(sQ / (sq) + sQ / (sq))');
+        }
+      }
+    }
+    else {
+      if (this.optionsTable.oper["sum"]) {
+        //da sum
+        formatosBase.sum.push('+t');
+        formatosBase.sum.push('st');
+      }
+
+      if (this.optionsTable.oper["sub"]) {
+        formatosBase.sub.push('t -t');
+        formatosBase.sub.push('-t');
+      }
+      if (this.optionsTable.oper["mult"]) {
+        formatosBase.mult.push('t * (st)');
+        formatosBase.mult.push('t * t');
+        formatosBase.sum.push('st');
+      }
+      if (this.optionsTable.oper["div"]) {
+        formatosBase.div.push('Y / (sx)');
+        formatosBase.div.push('Y / (-x)');
+      }
+      //NOTA:
+      //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
+      //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
+      //expoente
+      if (this.optionsTable.oper["exp"]) {
+        formatosBase.exp.push('(t^(2))');
+        formatosBase.exp.push('(-t)^(2)');
+      }
+
+      //expoente com parenteses
+      if (this.optionsTable.oper["expComParen"]) {
+        formatosBase.expComParen.push('((st)^(t))');
+      }
+
+      if (this.optionsTable.oper["expNegComParen"]) {
+        formatosBase.expNegComParen.push('((st)^(-t))');
+      }
+
+      //parênteses
+      //fazer dividido por tópicos foi muito bom pra adicionar novas opções
+      if (this.optionsTable.oper["paren"]) {
+        //opção default é apenas soma
+        formatosBase.parenA.push('(st +t)');
+        //subtração ou aleatórios
+        if (this.optionsTable.oper['sub']) {
+          formatosBase.parenB.push('(st -t)');
+        }
+        //opção de div
+        if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
+          formatosBase.parenC.push('(sQ / (sq))');
+        }
+        else if (this.optionsTable.oper['mult']) {
+          formatosBase.parenD.push('(st*t)');
+          formatosBase.parenD.push('(st*(st))');
+        } 
+        else if (this.optionsTable.oper['div']) {
+          formatosBase.parenD.push('(sQ / (sq))');
+        }
       }
     }
 
@@ -211,6 +275,7 @@ class GeradorExpressaoZ {
           //o = operador binário pode ser && ou || (E ou OU para o user)
           //i = inverso lógico (negação)
           let Q = 0, q = 0;
+          let Y = 0, x = 0;
           let lastSetted = "";
           const setVar = (name, v)=>{
             return String(name)+varsCount+"="+v+" ";
@@ -307,6 +372,25 @@ class GeradorExpressaoZ {
               case 'q':{
                   varName = getVarName("q");
                   varsForma.push(setVar("q", s+q));
+                  value = q;
+                }
+                break;
+              case 'Y':{
+                  let a = RandInt(1,6);
+                  let b = RandInt(1,6);
+                  Y = a * b;
+                  if (RandInt(0,1))
+                    x = a;
+                  else
+                    x = b;
+                  varName = getVarName("Y");
+                  varsForma.push(setVar("Y", s+Y));
+                  value = Q;
+                }
+                break;
+              case 'x':{
+                  varName = getVarName("x");
+                  varsForma.push(setVar("x", s+x));
                   value = q;
                 }
                 break;
@@ -446,6 +530,7 @@ async function gerarExpressaoZ ( form, targetId ) {
 	let qtdeOper = {};
   let terms = 0;
   let makeTestePEMDAS = false;
+  let difficult = "medium";
   for (let el of form.elements) {
     if (el.type === 'checkbox' && el.checked) {
       terms = 1;
@@ -485,6 +570,9 @@ async function gerarExpressaoZ ( form, targetId ) {
       makeTestePEMDAS = true;
       console.log("makeTestePEMDAS mode!");
     }
+    else if (el.type === "radio" && el.checked && el.name === "nivel") {
+      difficult = el.value;
+    }
   }
 
   if (qtdeExpressao <= 0) {
@@ -499,7 +587,7 @@ async function gerarExpressaoZ ( form, targetId ) {
 
   //reseta
   clicksData = {};
-	let gerador = new GeradorExpressaoZ({makeTestePEMDAS, oper, digitsTermA, digitsTermADiv, qtdeOper});
+	let gerador = new GeradorExpressaoZ({makeTestePEMDAS, oper, digitsTermA, digitsTermADiv, qtdeOper, difficult});
 	let strHtml = "";
 	for (let i = 0; i < qtdeExpressao; i++) {
     let ret = false;
