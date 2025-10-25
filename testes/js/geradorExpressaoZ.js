@@ -144,7 +144,6 @@ class GeradorExpressaoZ {
       }
 
       if (this.optionsTable.oper["sub"]) {
-        formatosBase.sub.push('st -t');
         formatosBase.sub.push('-t');
       }
       if (this.optionsTable.oper["mult"]) {
