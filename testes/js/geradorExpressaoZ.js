@@ -311,6 +311,7 @@ class GeradorExpressaoZ {
                 break;
 
               case 'c': {
+                c = RandInt(1, 5);
                 lastSetted = "c";
                 varName = getVarName("c");
                 varsForma.push(setVar("c", s+c));
@@ -319,6 +320,7 @@ class GeradorExpressaoZ {
               break;
 
               case 't': {
+                t = RandInt(0, 5);
                 lastSetted = "t";
                 varName = getVarName("t");
                 varsForma.push(setVar("t", s+t));
