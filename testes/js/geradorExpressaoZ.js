@@ -74,8 +74,8 @@ class GeradorExpressaoZ {
       
     if (this.difficult === "hard" || this.difficult === "medium") {
       //da sum
-      formatosBase.sum.push('sa +b');
-      formatosBase.sum.push('sa sb');
+      formatosBase.sum.push('+a +b');
+      formatosBase.sum.push('+a sb');
 
       if (this.optionsTable.oper["sub"]) {
         formatosBase.sub.push('sa -b');
@@ -141,7 +141,6 @@ class GeradorExpressaoZ {
       if (this.optionsTable.oper["sum"]) {
         //da sum
         formatosBase.sum.push('+t');
-        formatosBase.sum.push('st');
       }
 
       if (this.optionsTable.oper["sub"]) {
