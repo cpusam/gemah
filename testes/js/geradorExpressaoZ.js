@@ -42,10 +42,11 @@ class GeradorExpressaoZ {
     //q = divisor de 'q' tabuada de dividir 
     //t = numero de 0 até 5
     //Y = dividendo usando até no máximo valor 30
-    //x = divisor usando até no máximo valor 5
+    //x = divisor usando até no máximo valor de 1 até 5
     //NOTA: entre cada formato é escolhido um sinal s
     //NOTA: a potencia tem que ficar por último fora da expressão pro js executar corretamente (defeito)
     //NOTA: 'a' é maior que 'b'
+    //NOTA: em 25/10/2025 agora os formatos precisam iniciar com um 's' ou '+' ou '-' para ter o sinal de Link!
 		const formatosBase = {
       sum:[],
       sub:[],
@@ -73,66 +74,66 @@ class GeradorExpressaoZ {
       
     if (this.difficult === "hard" || this.difficult === "medium") {
       //da sum
-      formatosBase.sum.push('a +b');
-      formatosBase.sum.push('a sb');
+      formatosBase.sum.push('sa +b');
+      formatosBase.sum.push('sa sb');
 
       if (this.optionsTable.oper["sub"]) {
-        formatosBase.sub.push('a -b');
-        formatosBase.sub.push('b');
-        formatosBase.sub.push('a');
+        formatosBase.sub.push('sa -b');
+        formatosBase.sub.push('sb');
+        formatosBase.sub.push('sa');
       }
       if (this.optionsTable.oper["mult"]) {
-        formatosBase.mult.push('a * (sb)');
-        formatosBase.mult.push('a * b');
+        formatosBase.mult.push('sa * (sb)');
+        formatosBase.mult.push('sa * sb');
       }
       if (this.optionsTable.oper["div"]) {
-        formatosBase.div.push('Q / (sq)');
-        formatosBase.div.push('Q / (-q)');
+        formatosBase.div.push('sQ / (sq)');
+        formatosBase.div.push('sQ / (-q)');
       }
       //NOTA:
       //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
       //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
       //expoente
       if (this.optionsTable.oper["exp"]) {
-        formatosBase.exp.push('(c^(2))');
-        formatosBase.exp.push('(c^(t)) + (-c)^(t)');
-        formatosBase.exp.push('(-c)^(2)');
+        formatosBase.exp.push('s(c^(2))');
+        formatosBase.exp.push('s(c^(t)) + (-c)^(t)');
+        formatosBase.exp.push('s(-c)^(2)');
       }
 
       //expoente com parenteses
       if (this.optionsTable.oper["expComParen"]) {
-        formatosBase.expComParen.push('((sc)^(t))');
-        formatosBase.expComParen.push('((sc)^(t))*(sa)');
-        formatosBase.expComParen.push('((sc)^(t))*(sa)*(sQ/(sq))');
+        formatosBase.expComParen.push('s((sc)^(t))');
+        formatosBase.expComParen.push('s((sc)^(t))*(sa)');
+        formatosBase.expComParen.push('s((sc)^(t))*(sa)*(sQ/(sq))');
       }
 
       if (this.optionsTable.oper["expNegComParen"]) {
-        formatosBase.expNegComParen.push('((sc)^(-t))');
-        formatosBase.expNegComParen.push('((sc)^(-t))*(sa)');
-        formatosBase.expNegComParen.push('((sc)^(-t))*(sa)*(sQ/(sq))');
+        formatosBase.expNegComParen.push('s((sc)^(-t))');
+        formatosBase.expNegComParen.push('s((sc)^(-t))*(sa)');
+        formatosBase.expNegComParen.push('s((sc)^(-t))*(sa)*(sQ/(sq))');
       }
 
       //parênteses
       //fazer dividido por tópicos foi muito bom pra adicionar novas opções
       if (this.optionsTable.oper["paren"]) {
         //opção default é apenas soma
-        formatosBase.parenA.push('(sa sb)');
+        formatosBase.parenA.push('s(sa sb)');
         //subtração ou aleatórios
         if (this.optionsTable.oper['sub']) {
-          formatosBase.parenB.push('(sa sb)');
-          formatosBase.parenB.push('(sa sb sc)');
+          formatosBase.parenB.push('s(sa sb)');
+          formatosBase.parenB.push('s(sa sb sc)');
         }
         //opção de div
         if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
-          formatosBase.parenC.push('(sQ / (sq) sQ / (sq)) * (sc)');
-          formatosBase.parenC.push('(sc) * (sQ / (sq) sQ / (sq))');
+          formatosBase.parenC.push('s(sQ / (sq) sQ / (sq)) * (sc)');
+          formatosBase.parenC.push('s(sc) * (sQ / (sq) sQ / (sq))');
         }
         else if (this.optionsTable.oper['mult']) {
-          formatosBase.parenD.push('(sa sb sc) * (sa)');
-          formatosBase.parenD.push('(sa sb s(sa sb)) * (sc)');
+          formatosBase.parenD.push('s(sa sb sc) * (sa)');
+          formatosBase.parenD.push('s(sa sb s(sa sb)) * (sc)');
         } 
         else if (this.optionsTable.oper['div']) {
-          formatosBase.parenD.push('(sQ / (sq) + sQ / (sq))');
+          formatosBase.parenD.push('s(sQ / (sq) + sQ / (sq))');
         }
       }
     }
@@ -144,55 +145,54 @@ class GeradorExpressaoZ {
       }
 
       if (this.optionsTable.oper["sub"]) {
-        formatosBase.sub.push('t -t');
+        formatosBase.sub.push('st -t');
         formatosBase.sub.push('-t');
       }
       if (this.optionsTable.oper["mult"]) {
-        formatosBase.mult.push('t * (st)');
-        formatosBase.mult.push('t * t');
+        formatosBase.mult.push('st * (st)');
         formatosBase.sum.push('st');
       }
       if (this.optionsTable.oper["div"]) {
-        formatosBase.div.push('Y / (sx)');
-        formatosBase.div.push('Y / (-x)');
+        formatosBase.div.push('sY / (sx)');
+        formatosBase.div.push('sY / (-x)');
       }
       //NOTA:
       //tem um bug no interpretadorC que faz com que tenha de colocar as expressões expoente com parenteses
       //Talvez fosse melhor ter feito em ANTLR4 com C++ mesmo.
       //expoente
       if (this.optionsTable.oper["exp"]) {
-        formatosBase.exp.push('(t^(2))');
-        formatosBase.exp.push('(-t)^(2)');
+        formatosBase.exp.push('s(+t^(+2))');
+        formatosBase.exp.push('s(-t)^(+2)');
       }
 
       //expoente com parenteses
       if (this.optionsTable.oper["expComParen"]) {
-        formatosBase.expComParen.push('((st)^(t))');
+        formatosBase.expComParen.push('s((st)^(+t))');
       }
 
       if (this.optionsTable.oper["expNegComParen"]) {
-        formatosBase.expNegComParen.push('((st)^(-t))');
+        formatosBase.expNegComParen.push('s((st)^(-t))');
       }
 
       //parênteses
       //fazer dividido por tópicos foi muito bom pra adicionar novas opções
       if (this.optionsTable.oper["paren"]) {
         //opção default é apenas soma
-        formatosBase.parenA.push('(st +t)');
+        formatosBase.parenA.push('s(st +t)');
         //subtração ou aleatórios
         if (this.optionsTable.oper['sub']) {
-          formatosBase.parenB.push('(st -t)');
+          formatosBase.parenB.push('s(st -t)');
         }
         //opção de div
         if (this.optionsTable.oper['div'] && this.optionsTable.oper['mult']) {
-          formatosBase.parenC.push('(sQ / (sq))');
+          formatosBase.parenC.push('s(sQ / (sq))');
         }
         else if (this.optionsTable.oper['mult']) {
-          formatosBase.parenD.push('(st*t)');
-          formatosBase.parenD.push('(st*(st))');
+          formatosBase.parenD.push('s(st*t)');
+          formatosBase.parenD.push('s(st*(st))');
         } 
         else if (this.optionsTable.oper['div']) {
-          formatosBase.parenD.push('(sQ / (sq))');
+          formatosBase.parenD.push('s(sQ / (sq))');
         }
       }
     }
@@ -253,16 +253,19 @@ class GeradorExpressaoZ {
 
         let strForma = "";
         let varsForma = [];
+        let notLink = false;
 				{
           let tokens = [];
           a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
           A = a * a;
           let ok = false;
+          /*
           while (!ok) {
             b = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
             B = b * b;
             ok = b <= a;
           }
+          */
 
           let c = RandInt(1, 5);
           let t = RandInt(0, 5);
@@ -385,13 +388,13 @@ class GeradorExpressaoZ {
                     x = b;
                   varName = getVarName("Y");
                   varsForma.push(setVar("Y", s+Y));
-                  value = Q;
+                  value = Y;
                 }
                 break;
               case 'x':{
                   varName = getVarName("x");
                   varsForma.push(setVar("x", s+x));
-                  value = q;
+                  value = x;
                 }
                 break;
               default:
@@ -407,6 +410,7 @@ class GeradorExpressaoZ {
             }
             else {
               strForma += s;
+              notLink = true;
             }
           }
 				}
@@ -414,11 +418,7 @@ class GeradorExpressaoZ {
         expJS += strForma;
         vars = [...vars, ...varsForma];
 
-        if (total < lastMonomio) {
-          expUser += ' '+opLink;
-          expJS += ''+opLink; 
-        }
-        else {
+        if (total >= lastMonomio) {
           break;
         }
 
