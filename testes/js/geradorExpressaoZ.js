@@ -254,8 +254,7 @@ class GeradorExpressaoZ {
         let notLink = false;
 				{
           let tokens = [];
-          a = RandInt(this.optionsTable.minNumber, this.optionsTable.maxNumber);
-          A = a * a;
+          
           let ok = false;
           /*
           while (!ok) {
@@ -268,7 +267,7 @@ class GeradorExpressaoZ {
           let c = RandInt(1, 5);
           let t = RandInt(0, 5);
 
-          s = sinal[RandInt(0, sinal.length - 1)];
+          
           
           //formato das expressões binárias
           //t = termo de variável aleatória
@@ -286,6 +285,8 @@ class GeradorExpressaoZ {
           }
 
           for (let j = 0; forma.charAt(j); j++) {
+            s = sinal[RandInt(0, sinal.length - 1)];
+
             let varName = "";
             let value = 0;
             switch (forma.charAt(j)) {
