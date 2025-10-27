@@ -84,7 +84,7 @@ class GeradorExpressaoZ {
       }
       if (this.optionsTable.oper["mult"]) {
         formatosBase.mult.push('sa * (sb)');
-        formatosBase.mult.push('sa * sb');
+        formatosBase.mult.push('sa * (sb)');
       }
       if (this.optionsTable.oper["div"]) {
         formatosBase.div.push('sQ / (sq)');
@@ -186,7 +186,7 @@ class GeradorExpressaoZ {
           formatosBase.parenC.push('s(sQ / (sq))');
         }
         else if (this.optionsTable.oper['mult']) {
-          formatosBase.parenD.push('s(st*t)');
+          formatosBase.parenD.push('s(st*(t))');
           formatosBase.parenD.push('s(st*(st))');
         } 
         else if (this.optionsTable.oper['div']) {
