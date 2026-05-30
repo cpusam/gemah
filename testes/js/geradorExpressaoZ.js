@@ -978,6 +978,7 @@ async function gerarExpressaoZ ( form, targetId ) {
   let makeTestePEMDAS = false;
   let difficult = "medium";
   let qtdeNumeros = -1;
+  let numerosValorMinimo = 0, numerosValorMaximo = 100;
   for (let el of form.elements) {
     if (el.type === 'checkbox' && el.checked) {
       terms = 1;
@@ -1015,6 +1016,12 @@ async function gerarExpressaoZ ( form, targetId ) {
     }
     else if (el.id.indexOf('qtdeNumeros') > -1) {
       qtdeNumeros = parseInt(el.value);
+    }
+    else if (el.id.indexOf('numerosValorMinimo') > -1) {
+      numerosValorMinimo = parseInt(el.value);
+    }
+    else if (el.id.indexOf('numerosValorMaximo') > -1) {
+      numerosValorMaximo = parseInt(el.value);
     }
 
     else if (el.id.indexOf('escolherQtdeNumeros') > -1) {
