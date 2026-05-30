@@ -6,6 +6,7 @@
   <title>Super Gerador de Expressão em Z</title>
   <link type="text/css" rel="stylesheet" href="../css/styles.css">
   <script src="./js/geradorZ_lib.js"></script>
+  <script src="./js/interpretador_lib.js"></script>
   <script>
   async function runAST(expr, vars) {
     let result = "";
@@ -24,13 +25,31 @@
       return undefined;
     return ret;
   }
+  
+  async function runInterpretadorExpr(expr, vars) {
+    let result = "{}";
+    await interpretador().then(Module => {
+      if (!expr.length || !vars.length)
+        return;
+      let paramsTeste = "runExpr"+", "+"'a+2'"+","+"a=2";
+      let params = "runExpr,"+"'"+expr+"',"+vars;
+      console.log("expr = '"+expr+"'");
+      let runExpr = Module.cwrap('runExprZ', 'string', ['number', 'string']);
+      result = runExpr(3, params);
+      console.log("result = '"+result+",");
+    });
+    let ret = JSON.parse(result);
+    if (!ret)
+      return undefined;
+    return ret;
+  }
   </script>
   
 	<script src="./js/utils.js"></script>
 	<script src="./js/geradorExpressaoZ.js"></script>
 </head>
 <body>
-  <form id="geradorExpressaoZ" action="javascript:;" onsubmit="gerarExpressaoZ(this, 'contasExpressaoZ'); return false;">
+  <form id="geradorExpressaoZ" action="javascript:;" onsubmit="gerarExpressaoZ(this, 'contasExpressaoZ')">
 		<div>
 			<h1>Super Gerador de Expressões Z:</h1>
       <string>Escolha quais tipos de contas a expressão deve ter:</string>
@@ -74,8 +93,27 @@
 		<br />
     
 		<label for="qtdeExpressao">Quantas EXPRESSÔES deve ser geradas?</label>
-		<input id="qtdeExpressao" type="number" min="5" step="1" value="10">
-		<br />
+		<input id="qtdeExpressao" type="number" min="5" step="1" value="10" />
+    <br/>
+    <label for="qtdeNumeros">Quantas NÚMEROS deve ter?</label>
+		<input id="qtdeNumeros" type="number" min="3" step="1" value="8" />
+    <br/>
+    <label for="niveisParenteses">Quantos Níveis de Parênteses deve ter?</label>
+		<input id="niveisParenteses" type="number" min="3" step="1" value="3" />
+    <br/>
+    <!--
+    Remorivod por enquanto, tá bugado!
+    <div id="escolherQtdeNumeros">
+      <span>Quantos números no máximo deve ter a expressão?</span>
+      <br/>
+      <label><input type="radio" name="qtdeNumeros" checked />Qualquer quantidade de números</label>
+      <br/>
+      <label><input type="radio" name="qtdeNumeros"  />Quero escolher aquantidade de números</label>
+      <br/>
+      <label>Quantidade vai de 5 até :<input id="qtdeNumeros" type="number" min="5" step="1" value="10" /></label>
+      <br/>
+    </div>
+    -->
     
 		<button class="largeButton" type="submit">Gerar expressão</button>
 	</form>
