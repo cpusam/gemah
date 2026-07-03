@@ -224,7 +224,7 @@ class GeradorExpressaoZ {
     let newGenerator = true;
     if (newGenerator) {
       //atual -> next
-      let nextTable = {
+      let fullNextTable = {
         //binário
         "bin +": ["n"],
         "bin -": ["n"],
@@ -244,16 +244,103 @@ class GeradorExpressaoZ {
         "(expr)": ["expr"],
         "end_expr": [],
       };
-
-      let startSymbol = ["una +","una -","n","("];
-      let nextFromParen = ["una +", "una -", "bin *", "bin /"];
+      //tabela com os assuntos escolhidos
+      let nextTable = {
+        //ASSUNTO padrão
+        "bin +": ["n"],
+        "n": ["bin +", "end_expr"],
+        "una +": ["n"],
+        "end_expr": [],
+      };
+      
+      const fullStartSymbol = ["una +","una -","n","("];
+      const fullNextFromParen = ["una +", "una -", "bin *", "bin /"];
+      let startSymbol = ["una +","n"];
+      let nextFromParen = ["una +"];
+      //traduz dos assuntos para o nextTable
+      for (let o in this.optionsTable.oper) {
+        let op = "";
+        switch (o) {
+          case "unaMenos": {
+            nextTable["una -"] = ["n"];
+            if (startSymbol.indexOf("una -") < 0)
+              startSymbol.push("una -");
+            if (nextFromParen.indexOf("una -") < 0)
+              nextFromParen.push("una -");
+            if (!nextTable["expr"])
+              nextTable["expr"] = ["una -"];
+            else if (nextTable["expr"].indexOf("una -") < 0)
+              nextTable["expr"].push("una -");
+          }
+          break;
+          case "sub": {
+            nextTable["bin -"] = ["n"];
+            if (!nextTable["n"] || !nextTable["n"].length)
+              nextTable["n"] = ["bin -"];
+            else if (nextTable["n"].indexOf("bin -") < 0)
+              nextTable["n"].push("bin -");
+          }
+          break;
+          case "mult":
+          case "div": 
+          case "exp": 
+          case "expComParen": {
+            if (o === "mult") {
+              nextTable["bin *"] = ["(expr)"];
+              op = "bin *";
+              if (nextFromParen.indexOf("bin *") < 0)
+                nextFromParen.push("bin *");
+            }
+            else if (o === "div") {
+              nextTable["bin /"] = ["(expr)"];
+              op = "bin /";
+              if (nextFromParen.indexOf("bin /") < 0)
+                nextFromParen.push("bin /");
+            }
+            else if (o === "exp") {
+              nextTable["bin ^"] = ["(expr)"];
+              nextTable["p"] = fullNextTable["p"];
+            }
+            nextTable["(expr)"] = ["expr"];
+            if (!nextTable["expr"])
+              nextTable["expr"] = ["n", "una +"];
+            else {
+              for (let o of ["n", "una +"]) {
+                if (nextTable["expr"].indexOf(o) < 0)
+                  nextTable["expr"].push(o);
+              }
+            }
+            if (op.length) {
+              if (!nextTable["n"] || !nextTable["n"].length)
+                nextTable["n"] = [op];
+              else if (nextTable["n"].indexOf(o) < 0)
+                nextTable["n"].push(op);
+            }
+          }
+          break;
+          case "paren": {
+            if (startSymbol.indexOf("(") < 0)
+              startSymbol.push("(");
+            nextTable["("] = fullNextTable["("];
+            nextTable["(expr)"] = ["expr"];
+            if (!nextTable["expr"])
+              nextTable["expr"] = ["n", "una +"];
+            else {
+              for (let o of ["n", "una +"]) {
+                if (nextTable["expr"].indexOf(o) < 0)
+                  nextTable["expr"].push(o);
+              }
+            }
+          }
+          break;
+        }
+      }
+      
       let withoutParen = ["n"];
       let allSymbols = [];
       for (let s in nextTable) {
         allSymbols.push(s);
       }
-
-      
 
       let maxNumValue;
       let maxParenDepth;
@@ -997,6 +1084,10 @@ async function gerarExpressaoZ ( form, targetId ) {
       else if (el.id.indexOf('chosenSum') > -1) {
         qtdeOper["sum"] = RandInt(1, 3);
         oper['sum'] = 1;
+      }
+      else if (el.id.indexOf('chosenUnaMenos') > -1) {
+        qtdeOper["unaMenos"] = RandInt(1, 3);
+        oper['unaMenos'] = 1;
       }
       else if (el.id === ('chosenExp')) {
         qtdeOper["exp"] = true;
